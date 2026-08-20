@@ -1,0 +1,43 @@
+name: Release pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run setup
+        uses: ./.github/actions/setup
+
+      - name: Configure npm token # only required for initial releases which are not yet supported by trusted publishing
+        run: pnpm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}"
+
+      - name: Create release pull request or publish to npm
+        id: changesets
+        uses: changesets/action@v2.1.0
+        with:
+          version-script: pnpm run version
+          publish-script: pnpm run release
+          commit-message: "ci: Version Packages"
+          pr-title: "ci: Version Packages"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

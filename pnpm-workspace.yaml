@@ -1,0 +1,20 @@
+saveExact: true
+dedupePeers: true
+minimumReleaseAge: 10080 # 1 week
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 40320 # 4 weeks
+
+overrides:
+  adm-zip@<0.6.0: ^0.6.0
+  brace-expansion@<=5.0.7: ^5.0.8
+  cross-spawn@<7.0.5: ^7.0.5
+  esbuild@<0.25.0: ^0.25.0
+  nanoid@<3.3.18: ^3.3.18
+  postcss@<=8.5.22: ^8.5.23
+  uuid@<11.1.1: ^11.1.1
+  vite@<8.0.5: ^8.0.5
+
+allowBuilds:
+  esbuild: false
+  node: true
+  node@runtime:24.19.0: true

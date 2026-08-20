@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@6.3.1/schema.json",
+  "entry": [
+    "tests/**/*.spec.ts",
+    "docs/.vitepress/config.ts",
+    "docs/.vitepress/theme/index.ts"
+  ],
+  "project": ["src/**/*.ts", "tests/**/*.ts", "docs/.vitepress/**/*.ts"],
+  "ignoreDependencies": ["oxc-minify"]
+}

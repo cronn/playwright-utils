@@ -1,0 +1,99 @@
+{
+  "name": "@cronn/playwright-utils",
+  "version": "0.0.0",
+  "description": "Utilities for writing tests with Playwright",
+  "keywords": [
+    "playwright",
+    "testing",
+    "utils"
+  ],
+  "homepage": "https://cronn.github.io/playwright-utils/",
+  "bugs": {
+    "url": "https://github.com/cronn/playwright-utils/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "cronn",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cronn/playwright-utils.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf .turbo dist coverage playwright-report test-results docs/.vitepress/cache docs/.vitepress/dist && pnpm run pnpm:clean",
+    "compile": "tsc",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs",
+    "docs:preview": "vitepress preview docs",
+    "format:check": "oxfmt --check",
+    "format:fix": "oxfmt",
+    "knip:check": "knip",
+    "knip:fix": "knip --fix",
+    "lint:check": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "playwright:install": "playwright install chromium",
+    "pnpm:check": "pnpm dedupe --check",
+    "pnpm:clean": "pnpm pm clean && pnpm store prune",
+    "pnpm:fix": "pnpm dedupe",
+    "prepublishOnly": "pnpm turbo run ci",
+    "release": "pnpm turbo run build && pnpm publish --access=public --provenance && pnpm changeset git-tag",
+    "test:integration": "playwright test",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
+    "version": "pnpm changeset version && pnpm turbo run format:fix"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/core": "0.18.5",
+    "@changesets/cli": "3.0.0",
+    "@cronn/playwright-file-snapshots": "2.2.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.13.3",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitest/coverage-v8": "4.1.10",
+    "eslint": "10.8.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-check-file": "3.3.2",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "knip": "6.32.1",
+    "oxc-minify": "0.143.0",
+    "oxfmt": "0.62.0",
+    "publint": "0.3.23",
+    "rimraf": "6.1.3",
+    "tsdown": "0.22.14",
+    "turbo": "2.10.9",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "8.66.0",
+    "vitepress": "2.0.0-alpha.19",
+    "vitepress-plugin-group-icons": "1.7.6",
+    "vitest": "4.1.10"
+  },
+  "peerDependencies": {
+    "@cronn/playwright-file-snapshots": "^2",
+    "@playwright/test": "^1.55"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.22.0",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "24.19.0",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": "^22 || ^24 || >=26"
+  }
+}

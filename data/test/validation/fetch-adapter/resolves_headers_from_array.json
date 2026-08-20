@@ -1,0 +1,12 @@
+{
+  "method": "POST",
+  "url": "/",
+  "headers": {
+    "user-agent": "[USER_AGENT]",
+    "accept": "application/json",
+    "accept-encoding": "gzip,deflate,br",
+    "host": "[HOST]",
+    "connection": "keep-alive",
+    "content-length": "0"
+  }
+}

@@ -1,0 +1,18 @@
+# IntelliJ
+.idea
+*.iml
+
+# dependencies
+node_modules
+
+# builds
+dist
+.turbo
+
+# tests
+coverage
+test-results
+playwright-report
+
+# test outputs
+/data/test/output

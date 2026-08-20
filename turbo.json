@@ -1,0 +1,80 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "clean": { "outputLogs": "new-only" },
+    "compile": { "outputLogs": "new-only" },
+    "format:check": { "outputLogs": "new-only" },
+    "format:fix": {
+      "dependsOn": ["knip:fix", "lint:fix"],
+      "outputLogs": "new-only"
+    },
+    "knip:check": { "outputLogs": "new-only" },
+    "knip:fix": { "outputLogs": "new-only" },
+    "pnpm:check": { "outputLogs": "new-only" },
+    "pnpm:clean": { "outputLogs": "new-only" },
+    "pnpm:fix": { "outputLogs": "new-only" },
+    "playwright:install": { "outputLogs": "new-only" },
+    "lint:check": {
+      "dependsOn": ["compile"],
+      "outputLogs": "new-only"
+    },
+    "lint:fix": {
+      "dependsOn": ["knip:fix", "compile"],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": ["compile"],
+      "outputs": ["dist/**"],
+      "outputLogs": "new-only"
+    },
+    "docs:build": {
+      "outputs": ["docs/.vitepress/dist/**"],
+      "outputLogs": "new-only"
+    },
+    "docs:dev": {
+      "persistent": true,
+      "dependsOn": ["compile"],
+      "outputs": ["docs/.vitepress/cache/**"],
+      "outputLogs": "new-only"
+    },
+    "docs:preview": {
+      "persistent": true,
+      "dependsOn": ["docs:build"],
+      "outputLogs": "new-only"
+    },
+    "test": {
+      "dependsOn": ["test:unit", "test:integration"]
+    },
+    "test:unit": {
+      "dependsOn": ["compile"],
+      "outputLogs": "new-only"
+    },
+    "test:unit:coverage": {
+      "dependsOn": ["compile"],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:integration": {
+      "dependsOn": ["compile", "playwright:install"],
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "outputLogs": "new-only"
+    },
+    "check": {
+      "dependsOn": [
+        "compile",
+        "lint:check",
+        "test:unit:coverage",
+        "test:integration",
+        "format:check",
+        "knip:check",
+        "pnpm:check"
+      ]
+    },
+    "fix": {
+      "dependsOn": ["lint:fix", "format:fix", "knip:fix", "pnpm:fix"]
+    },
+    "ci": {
+      "dependsOn": ["check", "build", "docs:build"]
+    }
+  }
+}

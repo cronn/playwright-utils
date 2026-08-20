@@ -1,0 +1,22 @@
+{
+  "method": "POST",
+  "url": "/",
+  "headers": {
+    "user-agent": "[USER_AGENT]",
+    "accept": "*/*",
+    "accept-encoding": "gzip,deflate,br",
+    "content-type": "multipart/form-data; boundary=----[FORM_BOUNDARY_0]",
+    "content-length": "192",
+    "host": "[HOST]",
+    "connection": "keep-alive"
+  },
+  "body": [
+    "------[FORM_BOUNDARY_0]",
+    "content-disposition: form-data; name=\"file\"; filename=\"blob\"",
+    "content-type: text/html",
+    "",
+    "{\"data\":\"test\"}",
+    "------[FORM_BOUNDARY_0]--",
+    ""
+  ]
+}

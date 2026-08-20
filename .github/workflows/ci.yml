@@ -1,0 +1,48 @@
+name: CI pipeline
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    name: Run CI checks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run setup
+        uses: ./.github/actions/setup
+
+      - name: Run CI script
+        run: pnpm turbo run ci
+
+      - name: Upload test artifacts
+        uses: ./.github/actions/upload-test-artifacts
+        with:
+          name: ubuntu
+
+  test-windows:
+    name: Run tests on Windows
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run setup
+        uses: ./.github/actions/setup
+
+      - name: Run tests
+        run: pnpm turbo run test
+
+      - name: Upload test artifacts
+        uses: ./.github/actions/upload-test-artifacts
+        with:
+          name: windows

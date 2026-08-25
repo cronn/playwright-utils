@@ -28,9 +28,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Configure npm token # only required for initial releases which are not yet supported by trusted publishing
-        run: |
-          pnpm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}"
-          pnpm login
+        run: pnpm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}"
 
       - name: Create release pull request or publish to npm
         id: changesets
@@ -42,5 +40,4 @@ jobs:
           pr-title: "ci: Version Packages"
           github-token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

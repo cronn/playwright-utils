@@ -52,6 +52,9 @@
     "test:unit:coverage": "vitest run --coverage",
     "version": "pnpm changeset version && pnpm turbo run format:fix"
   },
+  "dependencies": {
+    "package-directory": "8.2.0"
+  },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",
     "@changesets/cli": "3.0.0",

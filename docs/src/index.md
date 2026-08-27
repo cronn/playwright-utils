@@ -19,6 +19,9 @@ features:
   - title: Snapshot Testing
     details: Mask non-deterministic values like IDs, timestamps or base URLs in a consistent format to keep file snapshots stable.
     link: /snapshots/normalizers
+  - title: Test Setup
+    details: Detect a CI environment and resolve paths from the package root to keep the Playwright configuration portable.
+    link: /configuration
   - title: Utility Types
     details: Types for writing reusable test helpers, like a target accepting both a page and a locator.
     link: /utility-types

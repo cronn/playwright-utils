@@ -36,6 +36,7 @@ export default defineConfig({
 
     sidebar: [
       { text: "Getting Started", link: "/getting-started" },
+      { text: "Configuration", link: "/configuration" },
       { text: "Utility Types", link: "/utility-types" },
       {
         text: "API Testing",

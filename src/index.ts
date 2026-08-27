@@ -1,3 +1,5 @@
+export { isCI } from "./environment";
+
 export { createFetchAdapter } from "./api/fetch-adapter";
 
 export { maskBaseURL } from "./normalizers/mask-base-url";

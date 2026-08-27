@@ -1,4 +1,4 @@
-export { fetchAdapter } from "./api/fetch-adapter";
+export { createFetchAdapter } from "./api/fetch-adapter";
 
 export { maskBaseURL } from "./normalizers/mask-base-url";
 export { maskedValue, maskedValueWithIndex } from "./normalizers/masked-value";

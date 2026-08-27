@@ -26,7 +26,7 @@ yarn add -D @cronn/playwright-utils
 
 ### API Testing
 
-[`fetchAdapter`](/api/fetch-adapter) turns Playwright's `APIRequestContext` into a `fetch` implementation, so API clients expecting `fetch` can send their requests through Playwright.
+[`createFetchAdapter`](/api/fetch-adapter) turns Playwright's `APIRequestContext` into a `fetch` implementation, so API clients expecting `fetch` can send their requests through Playwright.
 
 ```ts
 import { fetchAdapter } from "@cronn/playwright-utils";
@@ -38,7 +38,7 @@ test("returns users", async ({ request }) => {
 });
 ```
 
-[Learn more about `fetchAdapter` →](/api/fetch-adapter)
+[Learn more about `createFetchAdapter` →](/api/fetch-adapter)
 
 ### Normalizers
 

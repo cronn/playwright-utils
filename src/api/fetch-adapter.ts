@@ -16,7 +16,9 @@ type PlaywrightFetchOptions = NonNullable<
  * @param requestContext - Playwright request context to send requests with
  * @returns A function with the signature of the global `fetch`
  */
-export function fetchAdapter(requestContext: APIRequestContext): FetchAPI {
+export function createFetchAdapter(
+  requestContext: APIRequestContext,
+): FetchAPI {
   return async (input, init): Promise<Response> => {
     const response = await requestContext.fetch(
       mapToUrl(input),

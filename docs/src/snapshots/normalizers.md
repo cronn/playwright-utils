@@ -28,7 +28,7 @@ test("returns user", async () => {
   await expect({
     id: "6f1b4e2c",
     name: "Alice",
-    "created at": "2026-05-21T08:00:01Z",
+    createdAt: "2026-05-21T08:00:01Z",
   }).toMatchJsonFile({
     normalizers: [
       (value, { key }) =>
@@ -46,7 +46,7 @@ test("returns user", async () => {
 {
   "id": "[ID]",
   "name": "Alice",
-  "created at": "[CREATED_AT]"
+  "createdAt": "[CREATED_AT]"
 }
 ```
 

@@ -36,17 +36,14 @@ export default defineConfig({
 
     sidebar: [
       { text: "Getting Started", link: "/getting-started" },
+      { text: "Utility Types", link: "/utility-types" },
       {
         text: "API Testing",
-        items: [{ text: "fetchAdapter", link: "/api/fetch-adapter" }],
+        items: [{ text: "Fetch Adapter", link: "/api/fetch-adapter" }],
       },
       {
-        text: "File Snapshots",
-        items: [{ text: "Normalizers", link: "/normalizers" }],
-      },
-      {
-        text: "Reference",
-        items: [{ text: "Types", link: "/types" }],
+        text: "Snapshot Testing",
+        items: [{ text: "Normalizers", link: "/snapshots/normalizers" }],
       },
     ],
 

@@ -42,7 +42,7 @@ test("returns users", async ({ request }) => {
 
 ### Normalizers
 
-[Normalizers](/normalizers) mask values which are not stable across test runs, so file snapshots stay comparable. `maskedValue` and `maskedValueWithIndex` create placeholders in a consistent format, `maskBaseURL` masks the base URL of the application under test.
+[Normalizers](/snapshot-normalizers) mask values which are not stable across test runs, so file snapshots stay comparable. `maskedValue` and `maskedValueWithIndex` create placeholders in a consistent format, `maskBaseURL` masks the base URL of the application under test.
 
 ```ts
 import { maskBaseUrl, maskedValue } from "@cronn/playwright-utils";
@@ -51,10 +51,10 @@ maskedValue("user-agent"); // [USER_AGENT]
 maskBaseUrl("http://localhost:3000"); // replaces the base URL with [BASE_URL]
 ```
 
-[Learn more about Normalizers →](/normalizers)
+[Learn more about Normalizers →](/snapshot-normalizers)
 
 ### Types
 
-[`PlaywrightTarget`](/types) is a union of `Page` and `Locator` for helpers which accept either of both.
+[`PlaywrightTarget`](/utility-types) is a union of `Page` and `Locator` for helpers which accept either of both.
 
-[Learn more about Types →](/types)
+[Learn more about Types →](/utility-types)

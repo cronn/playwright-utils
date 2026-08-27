@@ -13,13 +13,13 @@ hero:
       link: https://github.com/cronn/playwright-utils
 
 features:
-  - title: API Testing with fetch
+  - title: API Testing
     details: Use Playwright's request context as a fetch implementation to send requests of an API client through Playwright.
     link: /api/fetch-adapter
-  - title: Snapshot Normalizers
+  - title: Snapshot Testing
     details: Mask non-deterministic values like IDs, timestamps or base URLs in a consistent format to keep file snapshots stable.
-    link: /normalizers
-  - title: Shared Types
+    link: /snapshots/normalizers
+  - title: Utility Types
     details: Types for writing reusable test helpers, like a target accepting both a page and a locator.
-    link: /types
+    link: /utility-types
 ---

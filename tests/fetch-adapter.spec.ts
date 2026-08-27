@@ -6,7 +6,7 @@ import { type PlaywrightTestArgs, test } from "@playwright/test";
 import http, { type IncomingMessage, type Server } from "node:http";
 
 import { maskedValue, maskedValueWithIndex } from "../src";
-import { fetchAdapter, type FetchAPI } from "../src/api/fetch-adapter";
+import { createFetchAdapter, type FetchAPI } from "../src/api/fetch-adapter";
 import { expect } from "../src/test/fixtures";
 
 function createTestServer(): Server {
@@ -66,7 +66,7 @@ function fetchWithAdapter(execute: (fetch: FetchAPI) => Promise<Response>) {
   return async function testBody({
     request,
   }: PlaywrightTestArgs): Promise<void> {
-    const playwrightFetch = fetchAdapter(request);
+    const playwrightFetch = createFetchAdapter(request);
     const response = await execute(playwrightFetch);
     await expect(response.json()).toMatchJsonFile({
       normalizers: [

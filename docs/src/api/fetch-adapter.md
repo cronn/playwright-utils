@@ -1,17 +1,17 @@
-# `fetchAdapter`
+# Fetch Adapter
 
-Playwright's [`request`](https://playwright.dev/docs/api-testing) fixture provides an `APIRequestContext`, which has its own request API and is not compatible with the [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) API of the platform. `fetchAdapter` wraps an `APIRequestContext` into a function with the signature of `fetch`, so any library expecting `fetch` can send its requests through Playwright.
+Playwright's [`request`](https://playwright.dev/docs/api-testing) fixture provides an `APIRequestContext`, which has its own request API and is not compatible with the [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) API of the platform. `createFetchAdapter` wraps an `APIRequestContext` into a function with the signature of `fetch`, so any library expecting `fetch` can send its requests through Playwright.
 
 This is especially useful for reusing an API client of the application under test (e.g. a generated OpenAPI client) inside tests: requests are sent through Playwright, which means they share the configuration of the request context (`baseURL`, `extraHTTPHeaders`, cookies and storage state, proxy settings) and are recorded in Playwright's traces and reports.
 
 ## Usage
 
 ```ts
-import { fetchAdapter } from "@cronn/playwright-utils";
+import { createFetchAdapter } from "@cronn/playwright-utils";
 import { expect, test } from "@playwright/test";
 
 test("returns users", async ({ request }) => {
-  const fetch = fetchAdapter(request);
+  const fetch = createFetchAdapter(request);
 
   const response = await fetch("/api/users", {
     method: "POST",
@@ -30,14 +30,14 @@ Relative URLs are resolved against the `baseURL` of the request context, which i
 Clients accepting a custom `fetch` implementation can be configured with the adapter, so all their requests are sent through Playwright:
 
 ```ts
-import { fetchAdapter } from "@cronn/playwright-utils";
+import { createFetchAdapter } from "@cronn/playwright-utils";
 import { expect, test } from "@playwright/test";
-import createClient from "openapi-fetch";
+import createClient from "./fetch-client";
 
 test("returns users", async ({ request }) => {
-  const client = createClient<paths>({
+  const client = createClient({
     baseUrl: "http://localhost:3000",
-    fetch: fetchAdapter(request),
+    fetch: createFetchAdapter(request),
   });
 
   const { data } = await client.GET("/api/users");

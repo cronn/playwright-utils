@@ -1,0 +1,23 @@
+{
+  "region": "Api Response",
+  "children": [
+    {
+      "heading": "Api Response",
+      "level": 2
+    },
+    {
+      "label": [
+        "Count:",
+        {
+          "textbox": "Count:",
+          "value": "4",
+          "readonly": true
+        }
+      ]
+    },
+    {
+      "paragraph": "Status: 200"
+    },
+    "{ \"username\": \"test_user\", \"enabled\": false, \"id\": 1 }"
+  ]
+}

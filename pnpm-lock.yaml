@@ -228,6 +228,9 @@ importers:
       '@changesets/cli':
         specifier: 3.0.1
         version: 3.0.1
+      '@cronn/element-snapshot':
+        specifier: 0.27.0
+        version: 0.27.0(@playwright/test@1.62.1)
       '@cronn/playwright-file-snapshots':
         specifier: 2.2.1
         version: 2.2.1(@playwright/test@1.62.1)
@@ -399,6 +402,12 @@ packages:
   '@clack/prompts@1.7.0':
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
+
+  '@cronn/element-snapshot@0.27.0':
+    resolution: {integrity: sha512-a3SyY/oihVXmGYzf/UTTF49dZz29rwTQyytYvm4a7wAnSqv2rO/uCHPyWfgHYahSErYsafYIKkMA01CahYXZKg==}
+    engines: {node: ^22 || ^24 || >=26}
+    peerDependencies:
+      '@playwright/test': ^1.55
 
   '@cronn/lib-file-snapshots@1.2.1':
     resolution: {integrity: sha512-PIwK1JzQN//7uAdQ8NH8oewp49SLjZz8Ye+M8r2Lx+LZD4ziOZU0Faj2xGBDZLfT4JFY2grHDNezA3lpZ6BA3A==}
@@ -3019,6 +3028,13 @@ snapshots:
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
+
+  '@cronn/element-snapshot@0.27.0(@playwright/test@1.62.1)':
+    dependencies:
+      '@cronn/lib-file-snapshots': 1.2.1
+      '@cronn/playwright-file-snapshots': 2.2.1(@playwright/test@1.62.1)
+      '@playwright/test': 1.62.1
+      package-directory: 8.2.0
 
   '@cronn/lib-file-snapshots@1.2.1':
     dependencies:

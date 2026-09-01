@@ -16,6 +16,9 @@ features:
   - title: API Testing
     details: Use Playwright's request context as a fetch implementation to send requests of an API client through Playwright.
     link: /api/fetch-adapter
+  - title: Network Interceptors
+    details: Abort, mock, modify or delay the requests of a page for the duration of a single action instead of the whole test.
+    link: /api/route-interceptor
   - title: Snapshot Testing
     details: Mask non-deterministic values like IDs, timestamps or base URLs in a consistent format to keep file snapshots stable.
     link: /snapshots/normalizers

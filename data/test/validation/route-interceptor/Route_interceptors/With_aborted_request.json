@@ -1,0 +1,22 @@
+{
+  "region": "Api Response",
+  "children": [
+    {
+      "heading": "Api Response",
+      "level": 2
+    },
+    {
+      "label": [
+        "Count:",
+        {
+          "textbox": "Count:",
+          "value": "1",
+          "readonly": true
+        }
+      ]
+    },
+    {
+      "paragraph": "Status: -"
+    }
+  ]
+}

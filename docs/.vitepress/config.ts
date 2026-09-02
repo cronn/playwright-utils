@@ -41,7 +41,10 @@ export default defineConfig({
       { text: "Utility Types", link: "/utility-types" },
       {
         text: "API Testing",
-        items: [{ text: "Fetch Adapter", link: "/api/fetch-adapter" }],
+        items: [
+          { text: "Route Interceptor", link: "/api/route-interceptor" },
+          { text: "Fetch Adapter", link: "/api/fetch-adapter" },
+        ],
       },
       {
         text: "Snapshot Testing",

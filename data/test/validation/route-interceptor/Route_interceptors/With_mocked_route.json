@@ -1,0 +1,23 @@
+{
+  "region": "Api Response",
+  "children": [
+    {
+      "heading": "Api Response",
+      "level": 2
+    },
+    {
+      "label": [
+        "Count:",
+        {
+          "textbox": "Count:",
+          "value": "2",
+          "readonly": true
+        }
+      ]
+    },
+    {
+      "paragraph": "Status: 500"
+    },
+    "{ \"error\": \"Internal Server Error\" }"
+  ]
+}

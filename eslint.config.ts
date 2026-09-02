@@ -10,6 +10,7 @@ export default defineConfig(
     "coverage",
     "docs/.vitepress/cache",
     "docs/.vitepress/dist",
+    "docs/.vitepress/.temp",
     "playwright-report",
   ]),
   {

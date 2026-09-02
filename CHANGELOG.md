@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- 4bc4055: Add features to intercept network requests for the duration of a callback
+
 ## 0.1.0
 
 ### Minor Changes

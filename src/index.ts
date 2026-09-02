@@ -6,9 +6,9 @@ export {
   interceptRoute,
   RouteInterceptor,
   RouteInterceptorFixture,
-} from "./api/route-interceptor";
+} from "./api/route-interceptor/interceptor";
 export {
-  pathPattern,
+  matchPath,
   type HttpMethod,
   type RouteFilter,
 } from "./api/route-interceptor/filter";

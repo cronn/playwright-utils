@@ -1,6 +1,6 @@
 import type { Page, Route, Request } from "@playwright/test";
 
-import { type RouteFilter } from "./filter";
+import { type HttpMethod, type RouteFilter } from "./filter";
 import { type ResponseHandler } from "./response-handler";
 
 export type Action<T> = () => Promise<T> | T;
@@ -20,10 +20,7 @@ function isFiltered(filter: RouteFilter, request: Request) {
   if (typeof method === "string") {
     return method === request.method();
   } else {
-    return (
-      method instanceof Array &&
-      (method as Array<string>).includes(request.method())
-    );
+    return method.includes(request.method() as HttpMethod);
   }
 }
 
@@ -84,16 +81,13 @@ async function withAbortedRoute<T = void>(
   }
 }
 
-async function withBlockedRoute<T = void>(
+async function withSuspendedRoute<T = void>(
   page: Page,
   filter: RouteFilter,
   action: Action<T>,
 ) {
-  let resolver: () => void;
-  const unblocked = new Promise<void>((resolve) => {
-    resolver = resolve;
-  });
-  const blockedRoutes = new Set<Promise<void>>();
+  const barrier = Promise.withResolvers<void>();
+  const suspendedRoutes = new Set<Promise<void>>();
 
   async function handler(route: Route, request: Request) {
     if (!isFiltered(filter, request)) {
@@ -101,15 +95,13 @@ async function withBlockedRoute<T = void>(
       return;
     }
 
-    const blockedRoute = unblocked.then(async () => {
-      await route.continue();
-    });
+    const suspendedRoute = barrier.promise.then(() => route.continue());
 
-    blockedRoutes.add(blockedRoute);
+    suspendedRoutes.add(suspendedRoute);
     try {
-      await blockedRoute;
+      await suspendedRoute;
     } finally {
-      blockedRoutes.delete(blockedRoute);
+      suspendedRoutes.delete(suspendedRoute);
     }
   }
 
@@ -117,11 +109,11 @@ async function withBlockedRoute<T = void>(
   try {
     return await action();
   } finally {
-    resolver!();
-    // Let every blocked request continue before the route is uninstalled,
+    barrier.resolve();
+    // Let every suspended request continue before the route is uninstalled,
     // otherwise Playwright handles the pending routes itself and the handler
     // fails with "Route is already handled!".
-    await Promise.allSettled([...blockedRoutes]);
+    await Promise.allSettled([...suspendedRoutes]);
     await uninstallRoute(page, filter, handler);
   }
 }
@@ -166,7 +158,7 @@ export class RouteInterceptor {
    *
    * This method returns a stub to continue chaining with.
    *
-   * @returns RouteInterceptorStarter
+   * @returns ExecutableRouteInterceptor
    * @see {@link Route#abort}
    *
    * @example
@@ -174,33 +166,33 @@ export class RouteInterceptor {
    * interceptor.abort().during(() => button.click())
    * ```
    */
-  public abort(): RouteInterceptorStarter {
-    return new RouteInterceptorStarter((action) =>
+  public abort(): ExecutableRouteInterceptor {
+    return new ExecutableRouteInterceptor((action) =>
       withAbortedRoute(this.page, this.filter, action),
     );
   }
 
   /**
-   * Block the target route for the duration of the callback.
+   * Suspend the target route for the duration of the callback.
    *
-   * A blocked route will not serve the response until the callback completes,
+   * A suspended route will not serve the response until the callback completes,
    * this is useful to validate loading indicators.
    *
    * This method returns a stub to continue chaining with.
    *
-   * @returns RouteInterceptorStarter
+   * @returns ExecutableRouteInterceptor
    *
    * @example
    * ```ts
-   * interceptor.block().during(async () => {
+   * interceptor.suspend().during(async () => {
    *   await button.click();
    *   await expect(loadingOverlay).toBeVisisble();
    * });
    * ```
    */
-  public block(): RouteInterceptorStarter {
-    return new RouteInterceptorStarter((action) =>
-      withBlockedRoute(this.page, this.filter, action),
+  public suspend(): ExecutableRouteInterceptor {
+    return new ExecutableRouteInterceptor((action) =>
+      withSuspendedRoute(this.page, this.filter, action),
     );
   }
 
@@ -212,7 +204,7 @@ export class RouteInterceptor {
    * This method returns a stub to continue chaining with.
    *
    * @param options - The fixed response to return for the target route
-   * @returns RouteInterceptorStarter
+   * @returns ExecutableRouteInterceptor
    * @see {@link Route#fulfill}
    *
    * @example
@@ -223,8 +215,8 @@ export class RouteInterceptor {
    * });
    * ```
    */
-  public respondWith(options: FulfillOptions): RouteInterceptorStarter {
-    return new RouteInterceptorStarter((action) =>
+  public respondWith(options: FulfillOptions): ExecutableRouteInterceptor {
+    return new ExecutableRouteInterceptor((action) =>
       withFulfilledRoute(this.page, this.filter, options, action),
     );
   }
@@ -238,7 +230,7 @@ export class RouteInterceptor {
    * This method returns a stub to continue chaining with.
    *
    * @param modifier - Callback to modify the response of the server before returning it to the client
-   * @returns RouteInterceptorStarter
+   * @returns ExecutableRouteInterceptor
    * @see {@link Route#fetch}, {@link Route#fulfill}
    *
    * @example
@@ -249,8 +241,8 @@ export class RouteInterceptor {
    * });
    * ```
    */
-  public modifyResponse(modifier: ResponseHandler): RouteInterceptorStarter {
-    return new RouteInterceptorStarter((action) =>
+  public modifyResponse(modifier: ResponseHandler): ExecutableRouteInterceptor {
+    return new ExecutableRouteInterceptor((action) =>
       withModifiedResponse(this.page, this.filter, modifier, action),
     );
   }
@@ -267,7 +259,7 @@ export class RouteInterceptor {
  * });
  * ```
  */
-export class RouteInterceptorStarter {
+export class ExecutableRouteInterceptor {
   private readonly runner;
 
   public constructor(runner: <T>(action: Action<T>) => Promise<T>) {
@@ -295,11 +287,11 @@ export class RouteInterceptorStarter {
  * @param page – The page object to intercept the route on
  * @param filter - The route to intercept
  * @returns RouteInterceptor
- * @see {@link pathPattern}
+ * @see {@link matchPath}
  *
  * @example
  * ```ts
- * await interceptRoute(page, pathPattern("/api/notifications"))
+ * await interceptRoute(page, matchPath("/api/notifications"))
  *   .respondWith({ status: 500 })
  *   .during(async () => {
  *     await page.getByRole("button", {name: "View notifications"}).click();
@@ -324,7 +316,7 @@ export function interceptRoute(
  * ```ts
  * class CustomRouteInterceptorFixture extends RouteInterceptorFixture {
  *   public onGetUser(userId = 1): RouteInterceptor {
- *     return this.intercept(pathPattern(`/api/users/${userId}`));
+ *     return this.intercept(matchPath(`/api/users/${userId}`));
  *   }
  * }
  *

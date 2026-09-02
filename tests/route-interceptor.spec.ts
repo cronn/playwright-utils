@@ -3,14 +3,13 @@ import { test } from "@playwright/test";
 import http, { type Server, type ServerResponse } from "node:http";
 
 import {
-  pathPattern,
+  matchPath,
   modifyJsonBody,
   modifyTextBody,
   type RouteInterceptor,
   RouteInterceptorFixture,
 } from "../src";
-
-import { expect } from "./lib/fixtures";
+import { expect } from "../src/test/fixtures";
 
 interface ApiUserResponse {
   username: string;
@@ -27,7 +26,7 @@ function sendResponse<T>(
   response.end(JSON.stringify(body));
 }
 
-function createTestServer(): Server {
+function createTestServer(): Promise<Server> {
   const server = http.createServer((request, response) => {
     if (request.url === undefined) {
       return;
@@ -53,24 +52,28 @@ function createTestServer(): Server {
     );
   });
 
-  server.listen(8080, "localhost");
-
-  return server;
+  return new Promise<Server>((resolve) =>
+    server.listen(0, () => resolve(server)),
+  );
 }
 
-let server: Server | undefined;
+let server: Server;
+let serverURL: string;
 
-test.beforeEach(() => {
-  server = createTestServer();
+test.beforeAll(async () => {
+  server = await createTestServer();
+  const address = server.address();
+  serverURL =
+    typeof address === "string" ? address : `http://localhost:${address?.port}`;
 });
 
-test.afterEach(() => {
+test.afterAll(() => {
   server?.close();
 });
 
 class CustomRouteInterceptorFixture extends RouteInterceptorFixture {
   public onGetUser(userId = 1): RouteInterceptor {
-    return this.intercept(pathPattern(`/users/${userId}`));
+    return this.intercept(matchPath(`/users/${userId}`));
   }
 }
 
@@ -79,47 +82,39 @@ const customTest = test.extend<{ intercept: CustomRouteInterceptorFixture }>({
 });
 
 const testPage = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-</head>
-<body>
-  <div role="progressbar" hidden id="loading-indicator">Loading...</div>
-  <button id="test-button">Fetch user</button>
-  <section aria-labelledby="api-response-title">
-    <h2 id="api-response-title">Api Response</h2>
-    <label>Count: <input id="api-response-count" readonly value="0" /></label>
-    <p>Status: <span id="api-response-status">-</span></p>
-    <pre id="api-response">
-    </pre>
-  </section>
-  <div id="error-alert" role="alert" aria-labelledby="alert-title" hidden>
-    <h2>Alert</h2>
-    <p id="alert-content"></p>
-  </div>
+<div role="progressbar" hidden id="loading-indicator">Loading...</div>
+<button id="test-button">Fetch user</button>
+<section aria-labelledby="api-response-title">
+  <h2 id="api-response-title">Api Response</h2>
+  <label>Count: <input id="api-response-count" readonly value="0" /></label>
+  <p>Status: <span id="api-response-status">-</span></p>
+  <pre id="api-response">
+  </pre>
+</section>
+<div id="error-alert" role="alert" aria-labelledby="alert-title" hidden>
+  <h2>Alert</h2>
+  <p id="alert-content"></p>
+</div>
 
-  <script defer>
-      document.getElementById("test-button").addEventListener("click", async () => {
-        const loadingIndicator = document.getElementById("loading-indicator");
-        loadingIndicator.hidden = false;
-        try {
-          const response = await fetch("http://localhost:8080/users/1");
-          const body = await response.json();
-          document.getElementById("api-response").innerText = JSON.stringify(body, undefined, 2);
-          document.getElementById("api-response-status").innerText = "" + response.status;
-        } catch (error) {
-          document.getElementById("alert-content").innerText = "" + error;
-          document.getElementById("error-alert").hidden = false;
-        } finally {
-          const responseCountElement = document.getElementById("api-response-count");
-          responseCountElement.value =  String(Number(responseCountElement.value) + 1);
-          loadingIndicator.hidden = true;
-        }
-      })
-  </script>
-</body>
-</html>
-`;
+<script defer>
+    document.getElementById("test-button").addEventListener("click", async () => {
+      const loadingIndicator = document.getElementById("loading-indicator");
+      loadingIndicator.hidden = false;
+      try {
+        const response = await fetch("http://localhost:8080/users/1");
+        const body = await response.json();
+        document.getElementById("api-response").innerText = JSON.stringify(body, undefined, 2);
+        document.getElementById("api-response-status").innerText = "" + response.status;
+      } catch (error) {
+        document.getElementById("alert-content").innerText = "" + error;
+        document.getElementById("error-alert").hidden = false;
+      } finally {
+        const responseCountElement = document.getElementById("api-response-count");
+        responseCountElement.value =  String(Number(responseCountElement.value) + 1);
+        loadingIndicator.hidden = true;
+      }
+    })
+</script>`;
 
 customTest("Route interceptors", async ({ page, intercept }) => {
   const apiResponseSection = page.getByRole("region", { name: "Api Response" });
@@ -142,7 +137,9 @@ customTest("Route interceptors", async ({ page, intercept }) => {
   }
 
   await test.step("Open page", async () => {
-    await page.setContent(testPage);
+    await page.setContent(
+      testPage.replace("http://localhost:8080", serverURL!),
+    );
     await expect(count).toHaveValue("0");
   });
 
@@ -190,7 +187,7 @@ customTest("Route interceptors", async ({ page, intercept }) => {
   await test.step("With barrier", async () => {
     await intercept
       .onGetUser()
-      .block()
+      .suspend()
       .during(async () => {
         await clickFetchUser();
         await page.waitForTimeout(200);

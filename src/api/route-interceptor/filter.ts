@@ -14,7 +14,7 @@ export type HttpMethod =
 /**
  * Filters used to intercept routes with {@link RouteInterceptor}.
  *
- * @see pathPattern
+ * @see matchPath
  */
 export interface RouteFilter {
   method?: HttpMethod | Array<HttpMethod>;
@@ -28,14 +28,14 @@ export interface RouteFilter {
  * @returns RouteFilter
  * @example
  * ```ts
- * await interceptRoute(page, pathPattern("/users/1"))
+ * await interceptRoute(page, matchPath("/users/1"))
  *   .respondWith({ status: 404 })
  *   .during(() => {
  *     // ...
  *   });
  * ```
  */
-export function pathPattern(pattern: RegExp | string): RouteFilter {
+export function matchPath(pattern: RegExp | string): RouteFilter {
   return {
     url: (url) =>
       typeof pattern === "string"

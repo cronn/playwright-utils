@@ -1,6 +1,6 @@
 import { type APIResponse } from "@playwright/test";
 
-import { type FulfillOptions } from "./index";
+import { type FulfillOptions } from "./interceptor";
 
 /**
  * Interface used to modify responses with {@link RouteInterceptor#modifyResponse}.
@@ -20,7 +20,7 @@ export type ResponseHandler = (
  *
  * @example
  * ```ts
- * await interceptRoute(page, pathPattern("/users/1"))
+ * await interceptRoute(page, matchPath("/users/1"))
  *   .modifyResponse(modifyJsonBody(user => ({...user, username: "modified_username"})))
  *   .during(async() => {
  *     // ... perform action to trigger request to /users/1 ...
@@ -42,7 +42,7 @@ export function modifyJsonBody<T>(modifier: (body: T) => T): ResponseHandler {
  *
  * @example
  * ```ts
- * await interceptRoute(page, pathPattern("/email/1/subject"))
+ * await interceptRoute(page, matchPath("/email/1/subject"))
  *   .modifyResponse(modifyTextBody(body => body.toLowerCase()))
  *   .during(async() => {
  *     // ... perform action to trigger request to /email/1/subject ...

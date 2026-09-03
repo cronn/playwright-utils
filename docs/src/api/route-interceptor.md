@@ -121,6 +121,49 @@ await expect(page.getByRole("progressbar")).toHaveCount(0);
 
 The suspended requests are continued once the action returns, and `suspend` resolves after all of them have been answered. Assertions on the loaded state therefore belong after the action, not inside it.
 
+## Waiting for requests
+
+The interceptors returned by `interceptRoute` can also be used to wait for requests and responses triggered by client actions, similar to [`page.waitForRequest`](https://playwright.dev/docs/api/class-page#page-wait-for-request) and [`page.waitForResponse`](https://playwright.dev/docs/api/class-page#page-wait-for-response) respectively.
+
+To avoid race-conditions, you should attach a request/response listener before the triggering action:
+
+```ts
+const requestPromise = interceptRoute(page, onCreateUser).waitForRequest();
+await page.getByRole("button", { name: "Save" }).click();
+const request = await requestPromise;
+
+expect(request.postDataJSON()).toEqual({ username: "test_user" });
+```
+
+The same applies to responses, which is useful to assert on the payload the page received:
+
+```ts
+const responsePromise = interceptRoute(
+  page,
+  matchPath("/api/users/1"),
+).waitForResponse();
+await page.getByRole("button", { name: "Fetch user" }).click();
+const response = await responsePromise;
+
+expect(response.status()).toBe(200);
+```
+
+Both methods can be combined with an interception, for example to wait for a mocked response:
+
+```ts
+const interceptor = interceptRoute(page, matchPath("/api/users/1"));
+
+await interceptor.respondWith({ status: 500 }).during(async () => {
+  const responsePromise = interceptor.waitForResponse();
+  await page.getByRole("button", { name: "Fetch user" }).click();
+  const response = await responsePromise;
+
+  expect(response.status()).toBe(500);
+});
+```
+
+If no matching request or response is observed within the timeout, the returned promise rejects. Note that a request which never receives a response, because it was aborted or blocked by CORS, will not resolve `waitForResponse`.
+
 ## Fixture
 
 `RouteInterceptorFixture` creates interceptors for a page. Extending it gives the routes of the application under test descriptive names, so tests do not have to repeat their URL patterns:

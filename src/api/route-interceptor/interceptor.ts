@@ -1,4 +1,4 @@
-import type { Page, Route, Request } from "@playwright/test";
+import type { Page, Route, Request, Response } from "@playwright/test";
 
 import { type HttpMethod, type RouteFilter } from "./filter";
 import { type ResponseHandler } from "./response-handler";
@@ -244,6 +244,36 @@ export class RouteInterceptor {
   public modifyResponse(modifier: ResponseHandler): ExecutableRouteInterceptor {
     return new ExecutableRouteInterceptor((action) =>
       withModifiedResponse(this.page, this.filter, modifier, action),
+    );
+  }
+
+  /**
+   * Wait until the target route was called and return the client request.
+   *
+   * @param options - Options for {@link Page#waitForRequest}
+   * @returns Response - The server response
+   */
+  public waitForRequest(
+    options?: Parameters<Page["waitForRequest"]>[1],
+  ): Promise<Request> {
+    return this.page.waitForRequest(
+      (request) => isFiltered(this.filter, request),
+      options,
+    );
+  }
+
+  /**
+   * Wait until the target route was called and return the server response.
+   *
+   * @param options - Options for {@link Page#waitForResponse}
+   * @returns Response - The server response
+   */
+  public waitForResponse(
+    options?: Parameters<Page["waitForResponse"]>[1],
+  ): Promise<Response> {
+    return this.page.waitForResponse(
+      (response) => isFiltered(this.filter, response.request()),
+      options,
     );
   }
 }

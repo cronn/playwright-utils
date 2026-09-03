@@ -18,6 +18,6 @@
     {
       "paragraph": "Status: 200"
     },
-    "{ \"username\": \"test_user\", \"enabled\": false, \"id\": 1 }"
+    "{ \"username\": \"test_user\", \"enabled\": true, \"id\": 1 }"
   ]
 }

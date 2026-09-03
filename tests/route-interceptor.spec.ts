@@ -1,5 +1,5 @@
 import { semanticSnapshot } from "@cronn/element-snapshot";
-import { test } from "@playwright/test";
+import { type Page, test } from "@playwright/test";
 import http, { type Server, type ServerResponse } from "node:http";
 
 import {
@@ -116,6 +116,10 @@ const testPage = `
     })
 </script>`;
 
+async function openTestPage(page: Page): Promise<void> {
+  await page.setContent(testPage.replace("http://localhost:8080", serverURL));
+}
+
 customTest("Route interceptors", async ({ page, intercept }) => {
   const apiResponseSection = page.getByRole("region", { name: "Api Response" });
   const loadingIndicator = page.getByRole("progressbar");
@@ -137,9 +141,8 @@ customTest("Route interceptors", async ({ page, intercept }) => {
   }
 
   await test.step("Open page", async () => {
-    await page.setContent(
-      testPage.replace("http://localhost:8080", serverURL!),
-    );
+    await page.goto(serverURL);
+    await openTestPage(page);
     await expect(count).toHaveValue("0");
   });
 
@@ -159,7 +162,7 @@ customTest("Route interceptors", async ({ page, intercept }) => {
       .onGetUser()
       .respondWith({
         status: 500,
-        body: JSON.stringify({ error: "Internal Server Error" }),
+        json: { error: "Internal Server Error" },
       })
       .during(async () => {
         await clickFetchUser();
@@ -211,5 +214,93 @@ customTest("Route interceptors", async ({ page, intercept }) => {
     await expect
       .soft(semanticSnapshot(page.getByRole("alert")))
       .toMatchJsonFile();
+  });
+});
+
+customTest("Wait for request and response", async ({ page, intercept }) => {
+  const fetchUserButton = page.getByRole("button", { name: "Fetch user" });
+  const count = page.getByRole("textbox", { name: "Count" });
+
+  let requestCount = 0;
+
+  async function clickFetchUser() {
+    await fetchUserButton.click();
+  }
+
+  /**
+   * Wait until the pending fetch settled, otherwise its response may leak into
+   * the `waitForResponse` call of a subsequent step.
+   */
+  async function waitForRequestFinished() {
+    await expect(count).toHaveValue(`${++requestCount}`);
+  }
+
+  await test.step("Open page", async () => {
+    await page.goto(serverURL);
+    await openTestPage(page);
+  });
+
+  await test.step("Wait for request", async () => {
+    const requestPromise = intercept.onGetUser().waitForRequest();
+    await clickFetchUser();
+    const request = await requestPromise;
+
+    expect(request.method()).toBe("GET");
+    expect(new URL(request.url()).pathname).toBe("/users/1");
+
+    await waitForRequestFinished();
+  });
+
+  await test.step("Wait for response", async () => {
+    const responsePromise = intercept.onGetUser().waitForResponse();
+    await clickFetchUser();
+    const response = await responsePromise;
+
+    expect(response.status()).toBe(200);
+    const body = (await response.json()) as ApiUserResponse;
+    expect(body).toStrictEqual({
+      username: "test_user",
+      enabled: true,
+      id: 1,
+    });
+
+    await waitForRequestFinished();
+  });
+
+  await test.step("Wait for intercepted response", async () => {
+    const interceptor = intercept.onGetUser();
+    await interceptor
+      .respondWith({
+        status: 500,
+        json: { error: "Internal Server Error" },
+      })
+      .during(async () => {
+        const responsePromise = interceptor.waitForResponse();
+        await clickFetchUser();
+        const response = await responsePromise;
+        expect(response.status()).toBe(500);
+
+        await waitForRequestFinished();
+      });
+  });
+
+  await test.step("Wait for request rejects after timeout", async () => {
+    const request = intercept.onGetUser(2).waitForRequest({ timeout: 1000 });
+
+    await clickFetchUser();
+
+    await expect(request).rejects.toThrow(/Timeout 1000ms exceeded/);
+
+    await waitForRequestFinished();
+  });
+
+  await test.step("Wait for response rejects after timeout", async () => {
+    const response = intercept
+      .intercept({ method: "POST", url: (url) => url.pathname === "/users/1" })
+      .waitForResponse({ timeout: 1000 });
+
+    await clickFetchUser();
+
+    await expect(response).rejects.toThrow(/Timeout 1000ms exceeded/);
   });
 });

@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- f7c4e82: Add RouteInterceptor#waitForRequest and waitForResponse
+
 ## 0.2.0
 
 ### Minor Changes

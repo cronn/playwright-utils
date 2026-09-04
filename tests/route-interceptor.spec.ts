@@ -304,3 +304,38 @@ customTest("Wait for request and response", async ({ page, intercept }) => {
     await expect(response).rejects.toThrow(/Timeout 1000ms exceeded/);
   });
 });
+
+customTest(
+  "Released suspended route falls back to surrounding interceptor",
+  async ({ page, intercept }) => {
+    const loadingIndicator = page.getByRole("progressbar");
+    const fetchUserButton = page.getByRole("button", { name: "Fetch user" });
+    const count = page.getByRole("textbox", { name: "Count" });
+    const responseStatus = page.locator("#api-response-status");
+
+    await test.step("Open page", async () => {
+      await page.goto(serverURL);
+      await openTestPage(page);
+      await expect(count).toHaveValue("0");
+    });
+
+    await intercept
+      .onGetUser()
+      .respondWith({
+        status: 500,
+        json: { error: "Internal Server Error" },
+      })
+      .during(async () => {
+        await intercept
+          .onGetUser()
+          .suspend()
+          .during(async () => {
+            await fetchUserButton.click();
+            await expect(loadingIndicator).toBeVisible();
+          });
+
+        await expect(count).toHaveValue("1");
+        await expect(responseStatus).toHaveText("500");
+      });
+  },
+);

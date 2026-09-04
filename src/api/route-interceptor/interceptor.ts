@@ -95,7 +95,7 @@ async function withSuspendedRoute<T = void>(
       return;
     }
 
-    const suspendedRoute = barrier.promise.then(() => route.continue());
+    const suspendedRoute = barrier.promise.then(() => route.fallback());
 
     suspendedRoutes.add(suspendedRoute);
     try {

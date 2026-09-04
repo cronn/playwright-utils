@@ -19,6 +19,9 @@ features:
   - title: Fetch Adapter
     details: Use Playwright's request context as a fetch implementation to send requests of an API client through Playwright.
     link: /api/fetch-adapter
+  - title: Console Captor
+    details: Collect the console messages of a page, filtered by level or a custom predicate, for a single action or a whole test.
+    link: /logging/console-captor
   - title: Snapshot Testing
     details: Mask non-deterministic values like IDs, timestamps or base URLs in a consistent format to keep file snapshots stable.
     link: /snapshots/normalizers

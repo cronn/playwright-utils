@@ -47,6 +47,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "Logging",
+        items: [{ text: "Console Captor", link: "/logging/console-captor" }],
+      },
+      {
         text: "Snapshot Testing",
         items: [{ text: "Normalizers", link: "/snapshots/normalizers" }],
       },

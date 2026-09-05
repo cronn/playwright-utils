@@ -2,6 +2,8 @@
   "recommendations": [
     "typescriptteam.native-preview",
     "dbaeumer.vscode-eslint",
-    "oxc.oxc-vscode"
+    "oxc.oxc-vscode",
+    "vitest.explorer",
+    "ms-playwright.playwright"
   ]
 }

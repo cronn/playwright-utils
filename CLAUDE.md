@@ -14,7 +14,7 @@ Single-package repository providing **utilities for writing tests with Playwrigh
 
 ## Tests
 
-- Unit tests: Vitest, located in `src/__tests__/**/*.test.ts` (`pnpm turbo test:unit`)
+- Unit tests: Vitest, located in `src/**/*.test.ts` (`pnpm turbo test:unit`)
 - Integration tests: Playwright, located in `tests/**/*.spec.ts` (`pnpm turbo test:integration`)
 
 ## Conventions

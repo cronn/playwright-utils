@@ -2,7 +2,13 @@ export { isCI } from "./environment";
 
 export { createFetchAdapter } from "./api/fetch-adapter";
 
-export { ConsoleCaptor } from "./api/logging/console-captor";
+export {
+  captureConsole,
+  hasLogLevel,
+  ConsoleCaptor,
+  type ConsoleMessageLevel,
+  type ConsoleMessageFilter,
+} from "./api/logging/console-captor";
 
 export {
   interceptRoute,

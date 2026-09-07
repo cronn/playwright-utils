@@ -3,12 +3,12 @@ import type { ConsoleMessage, Page } from "@playwright/test";
 /**
  * Filter used to select the messages collected by a {@link ConsoleCaptor}.
  */
-type ConsoleMessageFilter = (message: ConsoleMessage) => boolean;
+export type ConsoleMessageFilter = (message: ConsoleMessage) => boolean;
 
 /**
  * The log level of a {@link ConsoleMessage}, e.g. `log`, `warning` or `error`.
  */
-type ConsoleMessageLevel = ReturnType<ConsoleMessage["type"]>;
+export type ConsoleMessageLevel = ReturnType<ConsoleMessage["type"]>;
 
 function defaultFilter(_message: ConsoleMessage) {
   return true;
@@ -27,7 +27,7 @@ function defaultFilter(_message: ConsoleMessage) {
  *
  * @example
  * ```ts
- * const logs = ConsoleCaptor.log(page);
+ * const logs = captureConsole(page);
  *
  * await logs.during(async () => {
  *   await page.goto("/users");
@@ -41,8 +41,7 @@ function defaultFilter(_message: ConsoleMessage) {
  */
 export class ConsoleCaptor {
   private readonly page: Page;
-  private readonly filter: ConsoleMessageFilter;
-  private readonly listener: (messages: ConsoleMessage) => void;
+  private readonly consoleListener: (messages: ConsoleMessage) => void;
 
   /**
    * The captured messages, in the order in which the page reported them.
@@ -56,128 +55,25 @@ export class ConsoleCaptor {
    * Create a captor for the console messages of a page.
    *
    * The captor does not collect anything until it is started, either by
-   * {@link start} or by {@link during}.
+   * {@link startCapture} or by {@link during}.
    *
    * @param page - The page to capture console messages of
    * @param filter - Optional. Decides which messages are captured, captures every message if omitted
    *
    * @example
    * ```ts
-   * const captor = new ConsoleCaptor(page, (message) =>
+   * const captor = captureConsole(page, (message) =>
    *   message.location().url.endsWith("/analytics.js"),
    * );
    * ```
    */
   public constructor(page: Page, filter: ConsoleMessageFilter = defaultFilter) {
     this.page = page;
-    this.filter = filter;
-    this.listener = (event) => {
-      if (this.filter(event)) {
+    this.consoleListener = (event) => {
+      if (filter(event)) {
         this.messages.push(event);
       }
     };
-  }
-
-  /**
-   * Create a captor for the messages of one log level.
-   *
-   * Note that `console.warn` is reported as `warning`, and that messages logged
-   * by the browser itself, such as failed requests or CSP violations, are
-   * reported as `error`.
-   *
-   * @param page - The page to capture console messages of
-   * @param level - The log level to capture
-   * @param filter - Optional. Applied in addition to the level, so both have to match
-   * @returns ConsoleCaptor
-   *
-   * @example
-   * ```ts
-   * const captor = ConsoleCaptor.level(page, "debug");
-   * ```
-   */
-  public static level(
-    page: Page,
-    level: ConsoleMessageLevel,
-    filter: ConsoleMessageFilter = defaultFilter,
-  ): ConsoleCaptor {
-    return new ConsoleCaptor(
-      page,
-      (message) => message.type() === level && filter(message),
-    );
-  }
-
-  /**
-   * Create a captor for the messages of level `log`.
-   *
-   * @param page - The page to capture console messages of
-   * @param filter - Optional. Applied in addition to the level, so both have to match
-   * @returns ConsoleCaptor
-   *
-   * @see level
-   */
-  public static log(
-    page: Page,
-    filter: ConsoleMessageFilter = defaultFilter,
-  ): ConsoleCaptor {
-    return ConsoleCaptor.level(page, "log", filter);
-  }
-
-  /**
-   * Create a captor for the messages of level `info`.
-   *
-   * @param page - The page to capture console messages of
-   * @param filter - Optional. Applied in addition to the level, so both have to match
-   * @returns ConsoleCaptor
-   *
-   * @see level
-   */
-  public static info(
-    page: Page,
-    filter: ConsoleMessageFilter = defaultFilter,
-  ): ConsoleCaptor {
-    return ConsoleCaptor.level(page, "info", filter);
-  }
-
-  /**
-   * Create a captor for the messages of level `warning`, as reported by `console.warn`.
-   *
-   * @param page - The page to capture console messages of
-   * @param filter - Optional. Applied in addition to the level, so both have to match
-   * @returns ConsoleCaptor
-   *
-   * @see level
-   */
-  public static warning(
-    page: Page,
-    filter: ConsoleMessageFilter = defaultFilter,
-  ): ConsoleCaptor {
-    return ConsoleCaptor.level(page, "warning", filter);
-  }
-
-  /**
-   * Create a captor for the messages of level `error`.
-   *
-   * Besides `console.error`, this also captures the errors logged by the
-   * browser itself, such as failed requests or CSP violations.
-   *
-   * @param page - The page to capture console messages of
-   * @param filter - Optional. Applied in addition to the level, so both have to match
-   * @returns ConsoleCaptor
-   *
-   * @see level
-   *
-   * @example
-   * ```ts
-   * const captor = ConsoleCaptor.error(page, (message) =>
-   *   message.text().startsWith("[checkout]"),
-   * );
-   * ```
-   */
-  public static error(
-    page: Page,
-    filter: ConsoleMessageFilter = defaultFilter,
-  ): ConsoleCaptor {
-    return ConsoleCaptor.level(page, "error", filter);
   }
 
   /**
@@ -190,7 +86,7 @@ export class ConsoleCaptor {
    * ```ts
    * export const test = baseTest.extend<{ consoleErrors: ConsoleCaptor }>({
    *   consoleErrors: async ({ page }, use) => {
-   *     const captor = ConsoleCaptor.error(page);
+   *     const captor = captureConsole(page, "error");
    *     captor.start();
    *
    *     await use(captor);
@@ -201,8 +97,8 @@ export class ConsoleCaptor {
    * });
    * ```
    */
-  public start(): void {
-    this.page.on("console", this.listener);
+  public startCapture(): void {
+    this.page.on("console", this.consoleListener);
   }
 
   /**
@@ -210,8 +106,8 @@ export class ConsoleCaptor {
    *
    * The already captured {@link messages} are kept.
    */
-  public stop(): void {
-    this.page.off("console", this.listener);
+  public stopCapture(): void {
+    this.page.off("console", this.consoleListener);
   }
 
   /**
@@ -219,8 +115,7 @@ export class ConsoleCaptor {
    *
    * The capturing is stopped once the action has finished, even if it throws.
    * A promise returned by the action is awaited before the captor stops, no
-   * matter when it is awaited by the caller, while synchronous actions are not
-   * wrapped in a promise.
+   * matter when it is awaited by the caller.
    *
    * Only the returned value is awaited: asynchronous work which the action
    * starts without returning it is not covered by the capturing.
@@ -230,7 +125,7 @@ export class ConsoleCaptor {
    *
    * @example
    * ```ts
-   * const captor = ConsoleCaptor.error(page);
+   * const captor = captureConsole(page, "error");
    *
    * await captor.during(async () => {
    *   await page.getByRole("button", { name: "Create user" }).click();
@@ -240,24 +135,69 @@ export class ConsoleCaptor {
    * expect(captor.messages).toHaveLength(1);
    * ```
    */
-  public during<T>(action: () => Promise<T>): Promise<T>;
-  public during<T>(action: () => T): T;
-  public during<T>(action: () => Promise<T> | T): Promise<T> | T {
-    this.start();
+  public async during<T>(action: () => Promise<T>): Promise<T> {
+    this.startCapture();
 
-    let result: Promise<T> | T;
     try {
-      result = action();
-    } catch (error) {
-      this.stop();
-      throw error;
+      return await action();
+    } finally {
+      this.stopCapture();
     }
-
-    if (result instanceof Promise) {
-      return result.finally(() => this.stop());
-    }
-
-    this.stop();
-    return result;
   }
+}
+
+/**
+ * Factory method to create a {@link ConsoleCaptor} with the provided filter.
+ *
+ * The filter can be the log-level or a custom function on the message.
+ *
+ * @param page - The page to capture logs for
+ * @param levelOrFilter - The level or filter to filter out messages
+ * @returns ConsoleCaptor
+ *
+ * @example
+ * ```ts
+ * const errorCaptor = captureConsole(page, "error");
+ * const cspCaptor = captureConsole(page, message =>
+ *     hasLogLevel(message, "warning", "error") && message.text().includes("Content Security Policy")
+ * );
+ * ```
+ */
+export function captureConsole(
+  page: Page,
+  levelOrFilter?:
+    | ConsoleMessageLevel
+    | Array<ConsoleMessageLevel>
+    | ConsoleMessageFilter,
+): ConsoleCaptor {
+  if (levelOrFilter === undefined) {
+    return new ConsoleCaptor(page);
+  }
+  if (typeof levelOrFilter === "function") {
+    return new ConsoleCaptor(page, levelOrFilter);
+  }
+  if (Array.isArray(levelOrFilter)) {
+    return new ConsoleCaptor(page, (message) =>
+      hasLogLevel(message, ...levelOrFilter),
+    );
+  }
+  return new ConsoleCaptor(page, (message) =>
+    hasLogLevel(message, levelOrFilter),
+  );
+}
+
+/**
+ * Tests whether the given console message has one of the specified log levels.
+ *
+ * This can be useful to define a filter with {@link captureConsole}.
+ *
+ * @param message - The console message to check
+ * @param level - The log level
+ * @returns True if the message has one of the given log levels
+ */
+export function hasLogLevel(
+  message: ConsoleMessage,
+  ...level: Array<ConsoleMessageLevel>
+): boolean {
+  return level.includes(message.type());
 }

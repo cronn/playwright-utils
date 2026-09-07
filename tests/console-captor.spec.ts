@@ -1,12 +1,15 @@
 /* eslint-disable no-console -- the console calls run inside the browser page */
-import { type ConsoleMessage, expect, type Page, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
-import { ConsoleCaptor } from "../src";
-
-type ConsoleMessageFilter = (message: ConsoleMessage) => boolean;
+import {
+  captureConsole,
+  hasLogLevel,
+  type ConsoleCaptor,
+  type ConsoleMessageLevel,
+} from "../src";
 
 interface ConsoleEntry {
-  type: string;
+  type: ConsoleMessageLevel;
   text: string;
 }
 
@@ -41,8 +44,8 @@ async function expectCaptured(
 }
 
 test("captures all console messages by default", async ({ page }) => {
-  const captor = new ConsoleCaptor(page);
-  captor.start();
+  const captor = captureConsole(page);
+  captor.startCapture();
 
   await emitConsoleMessages(page);
 
@@ -50,10 +53,10 @@ test("captures all console messages by default", async ({ page }) => {
 });
 
 test("captures only messages matching the filter", async ({ page }) => {
-  const captor = new ConsoleCaptor(page, (message) =>
+  const captor = captureConsole(page, (message) =>
     message.text().includes("info"),
   );
-  captor.start();
+  captor.startCapture();
 
   await emitConsoleMessages(page);
 
@@ -62,8 +65,8 @@ test("captures only messages matching the filter", async ({ page }) => {
 
 for (const { type, text } of ALL_MESSAGES) {
   test(`captures messages of level ${type}`, async ({ page }) => {
-    const captor = ConsoleCaptor.level(page, type as "log");
-    captor.start();
+    const captor = captureConsole(page, type);
+    captor.startCapture();
 
     await emitConsoleMessages(page);
 
@@ -72,30 +75,20 @@ for (const { type, text } of ALL_MESSAGES) {
 }
 
 test("combines level and filter", async ({ page }) => {
-  const captor = ConsoleCaptor.level(page, "log", (message) =>
-    message.text().includes("info"),
+  const captor = captureConsole(
+    page,
+    (message) => hasLogLevel(message, "log") && message.text().includes("info"),
   );
-  captor.start();
+  captor.startCapture();
 
   await emitConsoleMessages(page);
   await expectCaptured(captor, []);
 });
 
-const LEVEL_FACTORIES = {
-  log: (page: Page, filter?: ConsoleMessageFilter) =>
-    ConsoleCaptor.log(page, filter),
-  info: (page: Page, filter?: ConsoleMessageFilter) =>
-    ConsoleCaptor.info(page, filter),
-  warning: (page: Page, filter?: ConsoleMessageFilter) =>
-    ConsoleCaptor.warning(page, filter),
-  error: (page: Page, filter?: ConsoleMessageFilter) =>
-    ConsoleCaptor.error(page, filter),
-};
-
 for (const { type, text } of ALL_MESSAGES) {
   test(`provides a shorthand factory for level ${type}`, async ({ page }) => {
-    const captor = LEVEL_FACTORIES[type as keyof typeof LEVEL_FACTORIES](page);
-    captor.start();
+    const captor = captureConsole(page, type);
+    captor.startCapture();
 
     await emitConsoleMessages(page);
 
@@ -105,11 +98,12 @@ for (const { type, text } of ALL_MESSAGES) {
   test(`applies the filter of the shorthand factory for level ${type}`, async ({
     page,
   }) => {
-    const captor = LEVEL_FACTORIES[type as keyof typeof LEVEL_FACTORIES](
+    const captor = captureConsole(
       page,
-      (message) => message.text().includes("no match"),
+      (message) =>
+        hasLogLevel(message, type) && message.text().includes("no match"),
     );
-    captor.start();
+    captor.startCapture();
 
     await emitConsoleMessages(page);
     await expectCaptured(captor, []);
@@ -117,15 +111,15 @@ for (const { type, text } of ALL_MESSAGES) {
 }
 
 test("stops capturing messages after stop", async ({ page }) => {
-  const captor = ConsoleCaptor.log(page);
-  const reference = ConsoleCaptor.log(page);
-  reference.start();
+  const captor = captureConsole(page, "log");
+  const reference = captureConsole(page, "log");
+  reference.startCapture();
 
-  captor.start();
+  captor.startCapture();
   await page.evaluate(() => console.log("before stop"));
   await expectCaptured(captor, [{ type: "log", text: "before stop" }]);
 
-  captor.stop();
+  captor.stopCapture();
   await page.evaluate(() => console.log("after stop"));
   await expectCaptured(reference, [
     { type: "log", text: "before stop" },
@@ -138,9 +132,9 @@ test("stops capturing messages after stop", async ({ page }) => {
 });
 
 test("captures messages during an async action", async ({ page }) => {
-  const captor = ConsoleCaptor.log(page);
-  const reference = ConsoleCaptor.log(page);
-  reference.start();
+  const captor = captureConsole(page, "log");
+  const reference = captureConsole(page, "log");
+  reference.startCapture();
 
   const result = await captor.during(async () => {
     await page.evaluate(() => console.log("during action"));
@@ -160,28 +154,16 @@ test("captures messages during an async action", async ({ page }) => {
   ]);
 });
 
-test("returns the result of a synchronous action", async ({ page }) => {
-  const captor = ConsoleCaptor.log(page);
-  const reference = ConsoleCaptor.log(page);
-  reference.start();
-
-  expect(captor.during(() => "result")).toBe("result");
-
-  await page.evaluate(() => console.log("after during"));
-  await expectCaptured(reference, [{ type: "log", text: "after during" }]);
-  expect(capturedEntries(captor)).toEqual([]);
-});
-
 test("stops capturing when the action throws", async ({ page }) => {
-  const captor = ConsoleCaptor.log(page);
-  const reference = ConsoleCaptor.log(page);
-  reference.start();
+  const captor = captureConsole(page, "log");
+  const reference = captureConsole(page, "log");
+  reference.startCapture();
 
-  expect(() =>
+  await expect(() =>
     captor.during(() => {
       throw new Error("action failed");
     }),
-  ).toThrow("action failed");
+  ).rejects.toEqual(new Error("action failed"));
 
   await page.evaluate(() => console.log("after during"));
   await expectCaptured(reference, [{ type: "log", text: "after during" }]);
@@ -189,9 +171,9 @@ test("stops capturing when the action throws", async ({ page }) => {
 });
 
 test("captures until a returned promise settles", async ({ page }) => {
-  const captor = ConsoleCaptor.log(page);
-  const reference = ConsoleCaptor.log(page);
-  reference.start();
+  const captor = captureConsole(page, "log");
+  const reference = captureConsole(page, "log");
+  reference.startCapture();
 
   const messagePromise = captor.during(() =>
     page.waitForEvent("console", (message) => message.text() === "trigger"),

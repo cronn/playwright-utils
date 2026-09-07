@@ -21,7 +21,7 @@ features:
     link: /api/fetch-adapter
   - title: Console Captor
     details: Collect the console messages of a page, filtered by level or a custom predicate, for a single action or a whole test.
-    link: /logging/console-captor
+    link: /capturing/console
   - title: Snapshot Testing
     details: Mask non-deterministic values like IDs, timestamps or base URLs in a consistent format to keep file snapshots stable.
     link: /snapshots/normalizers

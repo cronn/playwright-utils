@@ -8,7 +8,7 @@ export {
   ConsoleCaptor,
   type ConsoleMessageLevel,
   type ConsoleMessageFilter,
-} from "./api/logging/console-captor";
+} from "./capturing/console-captor";
 
 export {
   interceptRoute,

@@ -1,5 +1,16 @@
 # @cronn/playwright-utils
 
+## 0.4.0
+
+### Minor Changes
+
+- 52c25d7: Add `ConsoleCaptor` to collect the console messages of a page
+
+### Patch Changes
+
+- a1b1bbb: Suspended routes will now fallback to other previously registered routes when they are released.
+- 5ff54be: Use version range for `package-directory` dependency
+
 ## 0.3.0
 
 ### Minor Changes

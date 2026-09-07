@@ -53,7 +53,7 @@
     "version": "pnpm changeset version && pnpm turbo run format:fix"
   },
   "dependencies": {
-    "package-directory": "8.2.0"
+    "package-directory": "^8.2.0"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",

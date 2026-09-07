@@ -1,6 +1,6 @@
 {
   "name": "@cronn/playwright-utils",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Utilities for writing tests with Playwright",
   "keywords": [
     "playwright",

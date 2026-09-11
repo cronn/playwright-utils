@@ -201,3 +201,17 @@ test("captures until a returned promise settles", async ({ page }) => {
     { type: "log", text: "trigger" },
   ]);
 });
+
+test("clears the captured messages", async ({ page }) => {
+  const captor = captureConsole(page, "log");
+  captor.startCapture();
+
+  await page.evaluate(() => console.log("before clear"));
+  await expectCaptured(captor, [{ type: "log", text: "before clear" }]);
+
+  captor.clearMessages();
+  expect(capturedEntries(captor)).toEqual([]);
+
+  await page.evaluate(() => console.log("after clear"));
+  await expectCaptured(captor, [{ type: "log", text: "after clear" }]);
+});

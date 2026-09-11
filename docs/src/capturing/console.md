@@ -128,3 +128,18 @@ export const test = base.extend<{ consoleErrors: ConsoleCaptor }>({
 ```
 
 A captor can be started and stopped repeatedly; the collected messages are kept across restarts.
+
+## Clearing captured messages
+
+`clearMessages` empties the `messages` array without affecting the capturing itself, so a running captor keeps collecting the messages reported afterwards. This is useful to ignore the output of a setup step:
+
+```ts
+const captor = captureConsole(page, "error");
+captor.startCapture();
+
+await page.goto("/users");
+captor.clearMessages();
+
+await page.getByRole("button", { name: "Create user" }).click();
+expect(captor.messages).toEqual([]);
+```

@@ -111,6 +111,24 @@ export class ConsoleCaptor {
   }
 
   /**
+   * Remove all captured {@link messages}.
+   *
+   * @example
+   * ```ts
+   * captor.startCapture();
+   *
+   * await page.goto("/users");
+   * captor.clearMessages();
+   *
+   * await page.getByRole("button", { name: "Only enabled" }).click();
+   * expect(captor.messages).toHaveLength(1);
+   * ```
+   */
+  public clearMessages(): void {
+    this.messages.length = 0;
+  }
+
+  /**
    * Collect the console messages reported while the callback runs.
    *
    * The capturing is stopped once the action has finished, even if it throws.

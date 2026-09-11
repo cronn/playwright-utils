@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.5.0
+
+### Minor Changes
+
+- 1f406c3: Add `clearMessages` to `ConsoleCaptor` to remove all captured messages
+
 ## 0.4.0
 
 ### Minor Changes

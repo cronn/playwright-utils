@@ -2,6 +2,7 @@ saveExact: true
 dedupePeers: true
 minimumReleaseAge: 10080 # 1 week
 trustPolicy: no-downgrade
+trustPolicyExcludePrune: true
 trustPolicyIgnoreAfter: 40320 # 4 weeks
 
 overrides:

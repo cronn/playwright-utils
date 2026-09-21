@@ -1,0 +1,16 @@
+[
+  {
+    "blockedURI": "inline",
+    "disposition": "enforce",
+    "documentURI": "https://csp-captor.test/inline-script",
+    "effectiveDirective": "script-src-elem",
+    "lineNumber": 1,
+    "columnNumber": 0,
+    "originalPolicy": "default-src 'self'",
+    "referrer": "",
+    "sample": "",
+    "sourceFile": "https://csp-captor.test/inline-script",
+    "statusCode": 200,
+    "violatedDirective": "script-src-elem"
+  }
+]

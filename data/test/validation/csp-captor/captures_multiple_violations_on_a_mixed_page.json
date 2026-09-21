@@ -1,0 +1,30 @@
+[
+  {
+    "blockedURI": "inline",
+    "disposition": "enforce",
+    "documentURI": "https://csp-captor.test/mixed",
+    "effectiveDirective": "script-src-elem",
+    "lineNumber": 1,
+    "columnNumber": 0,
+    "originalPolicy": "default-src 'self'",
+    "referrer": "",
+    "sample": "",
+    "sourceFile": "https://csp-captor.test/mixed",
+    "statusCode": 200,
+    "violatedDirective": "script-src-elem"
+  },
+  {
+    "blockedURI": "https://blocked.example.invalid/pixel.png",
+    "disposition": "enforce",
+    "documentURI": "https://csp-captor.test/mixed",
+    "effectiveDirective": "img-src",
+    "lineNumber": 1,
+    "columnNumber": 0,
+    "originalPolicy": "default-src 'self'",
+    "referrer": "",
+    "sample": "",
+    "sourceFile": "https://csp-captor.test/mixed",
+    "statusCode": 200,
+    "violatedDirective": "img-src"
+  }
+]

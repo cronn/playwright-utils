@@ -57,7 +57,10 @@ export default defineConfig({
       },
       {
         text: "Capturing",
-        items: [{ text: "Console Messages", link: "/capturing/console" }],
+        items: [
+          { text: "Console Messages", link: "/capturing/console" },
+          { text: "CSP Violations", link: "/capturing/csp" },
+        ],
       },
       {
         text: "Snapshot Testing",

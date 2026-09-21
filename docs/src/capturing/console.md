@@ -41,6 +41,10 @@ captureConsole(page, "error");
 
 Note that `console.warn` is reported as `warning`, and that messages logged by the browser itself, such as failed requests or CSP violations, are reported as `error`.
 
+::: tip
+To capture Content Security Policy violations specifically, use [`CspCaptor`](/capturing/csp) instead, which reports structured violation data rather than free-text console messages.
+:::
+
 ### Custom filters
 
 The constructor and all factories accept a predicate as their last argument, which receives the `ConsoleMessage` and decides whether it is captured. This is useful to ignore known noise, or to narrow the captured messages down to the ones a test is about:

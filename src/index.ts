@@ -11,6 +11,14 @@ export {
 } from "./capturing/console-captor";
 
 export {
+  captureCspViolations,
+  CspCaptor,
+  cspFixtures,
+  type CspViolation,
+  type CspFixtures,
+} from "./capturing/csp-captor";
+
+export {
   interceptRoute,
   RouteInterceptor,
   RouteInterceptorFixture,

@@ -176,9 +176,6 @@ export class ConsoleCaptor {
  * @example
  * ```ts
  * const errorCaptor = captureConsole(page, "error");
- * const cspCaptor = captureConsole(page, message =>
- *     hasLogLevel(message, "warning", "error") && message.text().includes("Content Security Policy")
- * );
  * ```
  */
 export function captureConsole(

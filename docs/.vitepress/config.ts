@@ -47,6 +47,15 @@ export default defineConfig({
         ],
       },
       {
+        text: "Page Object Model",
+        items: [
+          {
+            text: "Locator Extensions",
+            link: "/page-object-model/locator-extensions",
+          },
+        ],
+      },
+      {
         text: "Capturing",
         items: [{ text: "Console Messages", link: "/capturing/console" }],
       },

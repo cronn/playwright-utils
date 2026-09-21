@@ -28,6 +28,11 @@ export {
 
 export { resolveFromPackageRoot } from "./file";
 
+export {
+  roleLocators,
+  type RoleLocators,
+} from "./page-object-model/locator-extensions";
+
 export { maskBaseURL } from "./normalizers/mask-base-url";
 export { maskedValue, maskedValueWithIndex } from "./normalizers/masked-value";
 

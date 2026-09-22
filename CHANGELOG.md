@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.6.0
+
+### Minor Changes
+
+- 90c35ec: Add `roleLocators` to create named locator helpers for every ARIA role with configurable default options.
+
 ## 0.5.0
 
 ### Minor Changes

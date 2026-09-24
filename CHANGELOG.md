@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.7.0
+
+### Minor Changes
+
+- 6a7aef3: Add `CspCaptor` to collect a page's Content Security Policy violations, along with `cspFixtures` to report them automatically for every test.
+
 ## 0.6.0
 
 ### Minor Changes

@@ -4,7 +4,7 @@ export default defineConfig({
   ignorePatterns: [
     ".idea",
     // tests
-    "__snapshots__",
+    "data/test",
     // VitePress
     "docs/.vitepress/cache",
     "docs/.vitepress/dist",

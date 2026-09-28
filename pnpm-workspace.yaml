@@ -1,4 +1,5 @@
 saveExact: true
+autoDedupe: true
 dedupePeers: true
 minimumReleaseAge: 10080 # 1 week
 trustPolicy: no-downgrade

@@ -10,9 +10,7 @@
     },
     "knip:check": { "outputLogs": "new-only" },
     "knip:fix": { "outputLogs": "new-only" },
-    "pnpm:check": { "outputLogs": "new-only" },
     "pnpm:clean": { "outputLogs": "new-only" },
-    "pnpm:fix": { "outputLogs": "new-only" },
     "playwright:install": { "outputLogs": "new-only" },
     "lint:check": {
       "dependsOn": ["compile"],
@@ -66,8 +64,7 @@
         "test:unit:coverage",
         "test:integration",
         "format:check",
-        "knip:check",
-        "pnpm:check"
+        "knip:check"
       ]
     },
     "fix": {

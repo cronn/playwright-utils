@@ -77,7 +77,7 @@
     "typescript-eslint": "8.70.0",
     "vitepress": "2.0.0-alpha.20",
     "vitepress-plugin-group-icons": "1.7.6",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   },
   "peerDependencies": {
     "@cronn/playwright-file-snapshots": "^2",

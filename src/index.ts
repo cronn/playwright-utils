@@ -36,6 +36,8 @@ export {
 
 export { resolveFromPackageRoot } from "./file";
 
+export { formFiller, type FormFields } from "./page-object-model/form-filler";
+
 export {
   extendLocator,
   type ExtendedLocator,

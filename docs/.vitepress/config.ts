@@ -53,6 +53,7 @@ export default defineConfig({
             text: "Locator Extensions",
             link: "/page-object-model/locator-extensions",
           },
+          { text: "Forms", link: "/page-object-model/forms" },
         ],
       },
       {

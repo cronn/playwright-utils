@@ -68,7 +68,7 @@
       ]
     },
     "fix": {
-      "dependsOn": ["lint:fix", "format:fix", "knip:fix", "pnpm:fix"]
+      "dependsOn": ["lint:fix", "format:fix", "knip:fix"]
     },
     "ci": {
       "dependsOn": ["check", "build", "docs:build"]

@@ -31,5 +31,7 @@ Single-package repository providing **utilities for writing tests with Playwrigh
 ## GitHub Pull Requests
 
 - Self-assign the PR
-- Provide a short summary of the introduced changes. Focus on essential changes.
+- Provide a short paragraph summarizing the introduced changes
+- For features, include only changes affecting consumers of the library
+- Provide a simple example demonstrating the changes
 - Reference related GitHub issues closed by the changes

@@ -67,3 +67,35 @@ const { tab } = roleLocators(page);
 await expect(tab()).toHaveCount(3);
 await expect(tab({ disabled: true })).toBeVisible();
 ```
+
+## Extended Locators
+
+Page objects often need element-specific helpers, such as filling a composite input or reading a parsed value. `extendLocator` adds custom properties and functions to a `Locator` while keeping the full `Locator` API, so the result can still be clicked, combined with other locators and passed to `expect`.
+
+### Usage
+
+```ts
+import { extendLocator, roleLocators } from "@cronn/playwright-utils";
+import { expect, test } from "@playwright/test";
+
+test("selects a date", async ({ page }) => {
+  const { textbox } = roleLocators(page);
+
+  const datePicker = extendLocator(textbox("Date"), (locator) => ({
+    async selectDate(date: Date) {
+      await locator.fill(date.toISOString().slice(0, 10));
+    },
+  }));
+
+  await datePicker.selectDate(new Date("2026-10-02"));
+
+  await expect(datePicker).toHaveValue("2026-10-02");
+});
+```
+
+`createExtensions` receives the original locator and is called once. Extensions must not override members of `Locator`, which is enforced at the type level.
+
+### Limitations
+
+- Locators derived from an extended locator, e.g. via `first()`, `filter()` or `locator()`, are plain `Locator`s without the extensions.
+- Methods of `Locator` return a new function instance on every access, so comparing them by identity fails (`extended.click !== extended.click`).

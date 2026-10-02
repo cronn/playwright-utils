@@ -37,6 +37,10 @@ export {
 export { resolveFromPackageRoot } from "./file";
 
 export {
+  extendLocator,
+  type ExtendedLocator,
+} from "./page-object-model/extend-locator";
+export {
   roleLocators,
   type RoleLocators,
 } from "./page-object-model/role-locators";

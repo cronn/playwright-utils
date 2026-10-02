@@ -39,7 +39,7 @@ export { resolveFromPackageRoot } from "./file";
 export {
   roleLocators,
   type RoleLocators,
-} from "./page-object-model/locator-extensions";
+} from "./page-object-model/role-locators";
 
 export { maskBaseURL } from "./normalizers/mask-base-url";
 export { maskedValue, maskedValueWithIndex } from "./normalizers/masked-value";

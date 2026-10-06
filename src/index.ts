@@ -34,6 +34,8 @@ export {
   type ResponseHandler,
 } from "./api/route-interceptor/response-handler";
 
+export { cspReport, getCspHeader } from "./security/csp-report";
+
 export { resolveFromPackageRoot } from "./file";
 
 export { formFiller, type FormFields } from "./page-object-model/form-filler";

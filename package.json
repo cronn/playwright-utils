@@ -51,6 +51,7 @@
     "version": "pnpm changeset version && pnpm turbo run format:fix"
   },
   "dependencies": {
+    "markdown-table": "^3.0.4",
     "package-directory": "^8.2.0"
   },
   "devDependencies": {

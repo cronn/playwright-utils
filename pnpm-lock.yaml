@@ -177,6 +177,9 @@ importers:
 
   .:
     dependencies:
+      markdown-table:
+        specifier: ^3.0.4
+        version: 3.0.4
       package-directory:
         specifier: ^8.2.0
         version: 8.2.0

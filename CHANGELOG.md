@@ -1,5 +1,12 @@
 # @cronn/playwright-utils
 
+## 0.8.0
+
+### Minor Changes
+
+- 0f25119: Add `formFiller` to declaratively fill forms in page objects.
+- 9113974: Add `extendLocator` to extend a `Locator` with custom properties and functions while retaining the `Locator` API.
+
 ## 0.7.0
 
 ### Minor Changes

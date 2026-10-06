@@ -64,6 +64,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "Security",
+        items: [{ text: "CSP Report", link: "/security/csp-report" }],
+      },
+      {
         text: "Snapshot Testing",
         items: [{ text: "Normalizers", link: "/snapshots/normalizers" }],
       },

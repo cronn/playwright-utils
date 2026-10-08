@@ -65,7 +65,13 @@ export default defineConfig({
       },
       {
         text: "Security",
-        items: [{ text: "CSP Report", link: "/security/csp-report" }],
+        items: [
+          { text: "CSP Report", link: "/security/csp-report" },
+          {
+            text: "Response Header Report",
+            link: "/security/response-header-report",
+          },
+        ],
       },
       {
         text: "Snapshot Testing",

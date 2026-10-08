@@ -1,7 +1,13 @@
 import type { Response } from "@playwright/test";
-import { markdownTable } from "markdown-table";
 
 import { maskedValueWithIndex } from "../normalizers/masked-value";
+import {
+  code,
+  codeOrNone,
+  markdownDocument,
+  markdownEntriesOrNone,
+  markdownTableOrNone,
+} from "../utils/markdown";
 
 interface CspDirective {
   name: string;
@@ -9,7 +15,7 @@ interface CspDirective {
 }
 
 interface CspRecommendation {
-  directive: string;
+  name: string;
   message: string;
 }
 
@@ -85,30 +91,32 @@ export async function getCspHeader(response: Response | null): Promise<string> {
 export function cspReport(header: string): string {
   const { directives, recommendations } = evaluateCsp(parseCsp(header));
 
-  return [
-    "# CSP Report",
-    "## Detected Directives",
-    directives.length === 0
-      ? "None"
-      : markdownTable([
-          ["Directive", "Value"],
-          ...maskNonces(directives).map((directive) => [
-            code(directive.name),
-            formatValues(directive.values),
-          ]),
+  return markdownDocument("CSP Report", [
+    {
+      heading: "Detected Directives",
+      content: markdownTableOrNone(
+        ["Directive", "Value"],
+        maskNonces(directives).map((directive) => [
+          code(directive.name),
+          formatValues(directive.values),
         ]),
-    "## Recommendations",
-    recommendations.length === 0
-      ? "None"
-      : recommendations
-          .map(
-            (recommendation) =>
-              `- ${code(recommendation.directive)}: ${recommendation.message}`,
-          )
-          .join("\n"),
-  ]
-    .join("\n\n")
-    .concat("\n");
+      ),
+    },
+    {
+      heading: "Recommendations",
+      content: markdownEntriesOrNone(recommendations),
+    },
+  ]);
+}
+
+/**
+ * Masks all nonce sources of a `Content-Security-Policy` header as
+ * `'nonce-[NONCE_0]'`, `'nonce-[NONCE_1]'`, … and normalizes its formatting.
+ */
+export function maskCspNonces(header: string): string {
+  return maskNonces(parseCsp(header))
+    .map((directive) => [directive.name, ...directive.values].join(" "))
+    .join("; ");
 }
 
 function parseCsp(header: string): Array<CspDirective> {
@@ -132,7 +140,7 @@ function evaluateCsp(directives: Array<CspDirective>): CspEvaluation {
 
   const recommendations = RECOMMENDED_DIRECTIVES.flatMap((recommended) =>
     evaluateDirective(recommended, directivesByName).map((message) => ({
-      directive: recommended.name,
+      name: recommended.name,
       message,
     })),
   );
@@ -252,13 +260,5 @@ function isNonce(value: string): boolean {
 }
 
 function formatValues(values: Array<string>): string {
-  if (values.length === 0) {
-    return "_none_";
-  }
-
-  return code(values.join(" "));
-}
-
-function code(text: string): string {
-  return `\`${text.replaceAll("|", "\\|")}\``;
+  return codeOrNone(values.join(" "));
 }

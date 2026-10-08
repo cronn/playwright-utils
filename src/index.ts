@@ -35,6 +35,12 @@ export {
 } from "./api/route-interceptor/response-handler";
 
 export { cspReport, getCspHeader } from "./security/csp-report";
+export {
+  getResponseHeaders,
+  responseHeaderReport,
+  type ResponseHeaderReportOptions,
+  type ResponseHeaderType,
+} from "./security/response-header-report";
 
 export { resolveFromPackageRoot } from "./file";
 

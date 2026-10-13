@@ -26,10 +26,9 @@ export default defineConfig({
 The same applies to test data read within a test:
 
 ```ts
-import { readFile } from "node:fs/promises";
-
 import { resolveFromPackageRoot } from "@cronn/playwright-utils";
 import { test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test("imports users", async ({ page }) => {
   const users = await readFile(

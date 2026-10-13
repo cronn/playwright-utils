@@ -32,6 +32,7 @@ Clients accepting a custom `fetch` implementation can be configured with the ada
 ```ts
 import { createFetchAdapter } from "@cronn/playwright-utils";
 import { expect, test } from "@playwright/test";
+
 import createClient from "./fetch-client";
 
 test("returns users", async ({ request }) => {

@@ -1,5 +1,13 @@
 # @cronn/playwright-utils
 
+## 0.9.0
+
+### Minor Changes
+
+- 1679dbb: Add `cspReport` to evaluate a `Content-Security-Policy` header against recommended directives and render the result as a Markdown report for file snapshots.
+
+  Add `getCspHeader` to extract the `Content-Security-Policy` header from a page response, falling back to an empty string.
+
 ## 0.8.0
 
 ### Minor Changes

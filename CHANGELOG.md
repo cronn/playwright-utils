@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.10.1
+
+### Patch Changes
+
+- 22048ce: Rename `responseHeaderReport` to `responseHeadersReport`
+
 ## 0.10.0
 
 ### Minor Changes

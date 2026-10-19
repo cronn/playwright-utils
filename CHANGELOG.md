@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.10.0
+
+### Minor Changes
+
+- 892aa3c: Add `responseHeaderReport` to evaluate response headers against recommended security headers for HTML documents or API responses and render the result as a Markdown report for file snapshots.
+
 ## 0.9.0
 
 ### Minor Changes

@@ -1,4 +1,4 @@
-# Response Header Report
+# Response Headers Report
 
 ## Detected Headers
 
@@ -14,6 +14,3 @@ None
 - `strict-transport-security`: Missing, add `max-age=31536000; includeSubDomains`
 - `x-content-type-options`: Missing, add `nosniff`
 - `x-robots-tag`: Missing, add header
-- `permissions-policy`: Missing, add `geolocation=(), microphone=(), camera=()`
-- `referrer-policy`: Missing, add `no-referrer`
-- `x-frame-options`: Missing, add `DENY`

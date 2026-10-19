@@ -4,12 +4,12 @@ import type { AddressInfo } from "node:net";
 
 import {
   getResponseHeaders,
-  responseHeaderReport,
+  responseHeadersReport,
   type ResponseHeaderType,
-} from "../src/security/response-header-report";
+} from "../src/security/response-headers-report";
 import { expect } from "../src/test/fixtures";
 
-const SERVER_URL = "https://response-header-report.test";
+const SERVER_URL = "https://response-headers-report.test";
 
 const COMPLIANT_API_HEADERS = {
   "cache-control": "no-store",
@@ -33,15 +33,15 @@ const COMPLIANT_DOCUMENT_HEADERS = {
 
 test.describe("document", () => {
   test("recommends nothing for compliant headers", async () => {
-    await testResponseHeaderReport(COMPLIANT_DOCUMENT_HEADERS, "document");
+    await testResponseHeadersReport(COMPLIANT_DOCUMENT_HEADERS, "document");
   });
 
   test("recommends all headers for empty headers", async () => {
-    await testResponseHeaderReport({}, "document");
+    await testResponseHeadersReport({}, "document");
   });
 
   test("accepts stricter values", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_DOCUMENT_HEADERS,
         "strict-transport-security":
@@ -54,7 +54,7 @@ test.describe("document", () => {
   });
 
   test("recommends changing deviating values", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_DOCUMENT_HEADERS,
         "strict-transport-security": "max-age=3600",
@@ -68,7 +68,7 @@ test.describe("document", () => {
   });
 
   test("ignores unrelated headers and masks CSP nonces", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_DOCUMENT_HEADERS,
         "content-security-policy":
@@ -81,7 +81,7 @@ test.describe("document", () => {
   });
 
   test("recommends removing discouraged headers", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_DOCUMENT_HEADERS,
         "Access-Control-Allow-Origin": "*",
@@ -94,15 +94,15 @@ test.describe("document", () => {
 
 test.describe("api", () => {
   test("recommends nothing for compliant headers", async () => {
-    await testResponseHeaderReport(COMPLIANT_API_HEADERS, "api");
+    await testResponseHeadersReport(COMPLIANT_API_HEADERS, "api");
   });
 
   test("recommends all headers for empty headers", async () => {
-    await testResponseHeaderReport({}, "api");
+    await testResponseHeadersReport({}, "api");
   });
 
   test("recommends changing deviating values", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_API_HEADERS,
         "cross-origin-opener-policy": "unsafe-none",
@@ -114,7 +114,7 @@ test.describe("api", () => {
   });
 
   test("recommends removing discouraged headers", async () => {
-    await testResponseHeaderReport(
+    await testResponseHeadersReport(
       {
         ...COMPLIANT_API_HEADERS,
         "Access-Control-Allow-Origin": "*",
@@ -126,7 +126,7 @@ test.describe("api", () => {
 });
 
 test("compares header values ignoring case and whitespace", async () => {
-  await testResponseHeaderReport(
+  await testResponseHeadersReport(
     {
       ...COMPLIANT_API_HEADERS,
       "cross-origin-opener-policy": " Same-Origin ",
@@ -179,11 +179,11 @@ test("falls back to empty headers if the response is missing", async () => {
   expect(await getResponseHeaders(null)).toEqual({});
 });
 
-async function testResponseHeaderReport(
+async function testResponseHeadersReport(
   headers: Record<string, string>,
   type: ResponseHeaderType,
 ): Promise<void> {
   await expect
-    .soft(responseHeaderReport(headers, { type }))
+    .soft(responseHeadersReport(headers, { type }))
     .toMatchTextFile({ fileExtension: "md" });
 }

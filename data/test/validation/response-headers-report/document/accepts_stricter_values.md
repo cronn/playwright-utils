@@ -1,4 +1,4 @@
-# Response Header Report
+# Response Headers Report
 
 ## Detected Headers
 

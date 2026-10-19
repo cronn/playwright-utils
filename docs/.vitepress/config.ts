@@ -68,8 +68,8 @@ export default defineConfig({
         items: [
           { text: "CSP Report", link: "/security/csp-report" },
           {
-            text: "Response Header Report",
-            link: "/security/response-header-report",
+            text: "Response Headers Report",
+            link: "/security/response-headers-report",
           },
         ],
       },

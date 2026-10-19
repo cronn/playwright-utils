@@ -1,4 +1,4 @@
-# Response Header Report
+# Response Headers Report
 
 ## Detected Headers
 
@@ -15,10 +15,7 @@
 | `permissions-policy`           | `camera=(), microphone=(), geolocation=()` |
 | `referrer-policy`              | `no-referrer`                              |
 | `x-frame-options`              | `DENY`                                     |
-| `access-control-allow-origin`  | `*`                                        |
-| `x-xss-protection`             | `1; mode=block`                            |
 
 ## Recommendations
 
-- `access-control-allow-origin`: Remove header
-- `x-xss-protection`: Remove header
+None

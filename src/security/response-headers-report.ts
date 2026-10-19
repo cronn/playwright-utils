@@ -12,7 +12,7 @@ import { maskCspNonces } from "./csp-report";
 
 export type ResponseHeaderType = "document" | "api";
 
-export interface ResponseHeaderReportOptions {
+export interface ResponseHeadersReportOptions {
   type: ResponseHeaderType;
 }
 
@@ -132,14 +132,14 @@ export async function getResponseHeaders(
  * const response = await page.goto("/");
  * const headers = await getResponseHeaders(response);
  *
- * expect(responseHeaderReport(headers, { type: "document" })).toMatchTextFile({
+ * expect(responseHeadersReport(headers, { type: "document" })).toMatchTextFile({
  *   fileExtension: "md",
  * });
  * ```
  */
-export function responseHeaderReport(
+export function responseHeadersReport(
   headers: Record<string, string>,
-  options: ResponseHeaderReportOptions,
+  options: ResponseHeadersReportOptions,
 ): string {
   const recommendedHeaders = RECOMMENDED_HEADERS[options.type];
   const discouragedHeaders = DISCOURAGED_HEADERS[options.type];
@@ -168,7 +168,7 @@ export function responseHeaderReport(
     (a, b) => ACTION_ORDER.indexOf(a.action) - ACTION_ORDER.indexOf(b.action),
   );
 
-  return markdownDocument("Response Header Report", [
+  return markdownDocument("Response Headers Report", [
     {
       heading: "Detected Headers",
       content: markdownTableOrNone(

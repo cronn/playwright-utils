@@ -1,4 +1,4 @@
-# Response Header Report
+# Response Headers Report
 
 ## Detected Headers
 
@@ -7,10 +7,10 @@
 | `cache-control`                | `no-store`                                   |
 | `content-security-policy`      | `default-src 'none'; frame-ancestors 'none'` |
 | `content-type`                 | `application/json`                           |
-| `cross-origin-opener-policy`   | `same-origin`                                |
+| `cross-origin-opener-policy`   | ` Same-Origin `                              |
 | `cross-origin-resource-policy` | `same-origin`                                |
-| `strict-transport-security`    | `max-age=31536000; includeSubDomains`        |
-| `x-content-type-options`       | `nosniff`                                    |
+| `strict-transport-security`    | `MAX-AGE=31536000 ;includesubdomains;`       |
+| `x-content-type-options`       | `NoSniff`                                    |
 | `x-robots-tag`                 | `noindex`                                    |
 
 ## Recommendations

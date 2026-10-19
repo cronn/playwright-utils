@@ -1,13 +1,13 @@
-# Response Header Report
+# Response Headers Report
 
-Security headers protect against common attacks like clickjacking, MIME sniffing or protocol downgrades, but a missing or weakened header usually goes unnoticed because the application keeps working. `responseHeaderReport` evaluates the headers of a response against a set of recommended security headers and returns a Markdown report, which can be stored as a file snapshot to detect any change to the headers.
+Security headers protect against common attacks like clickjacking, MIME sniffing or protocol downgrades, but a missing or weakened header usually goes unnoticed because the application keeps working. `responseHeadersReport` evaluates the headers of a response against a set of recommended security headers and returns a Markdown report, which can be stored as a file snapshot to detect any change to the headers.
 
 ## Usage
 
 ```ts
 import {
   getResponseHeaders,
-  responseHeaderReport,
+  responseHeadersReport,
 } from "@cronn/playwright-utils";
 import { expect, test } from "@playwright/test";
 
@@ -15,7 +15,7 @@ test("has secure response headers", async ({ page }) => {
   const response = await page.goto("/");
   const headers = await getResponseHeaders(response);
 
-  expect(responseHeaderReport(headers, { type: "document" })).toMatchTextFile({
+  expect(responseHeadersReport(headers, { type: "document" })).toMatchTextFile({
     fileExtension: "md",
   });
 });
@@ -24,7 +24,7 @@ test("has secure API response headers", async ({ request }) => {
   const response = await request.get("/api/users");
   const headers = await getResponseHeaders(response);
 
-  expect(responseHeaderReport(headers, { type: "api" })).toMatchTextFile({
+  expect(responseHeadersReport(headers, { type: "api" })).toMatchTextFile({
     fileExtension: "md",
   });
 });
@@ -35,7 +35,7 @@ test("has secure API response headers", async ({ request }) => {
 The report lists all evaluated headers of the response, followed by the recommendations:
 
 ```md
-# Response Header Report
+# Response Headers Report
 
 ## Detected Headers
 

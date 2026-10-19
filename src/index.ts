@@ -37,10 +37,10 @@ export {
 export { cspReport, getCspHeader } from "./security/csp-report";
 export {
   getResponseHeaders,
-  responseHeaderReport,
-  type ResponseHeaderReportOptions,
+  responseHeadersReport,
+  type ResponseHeadersReportOptions,
   type ResponseHeaderType,
-} from "./security/response-header-report";
+} from "./security/response-headers-report";
 
 export { resolveFromPackageRoot } from "./file";
 

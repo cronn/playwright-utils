@@ -7,7 +7,7 @@ None
 ## Recommendations
 
 - `cache-control`: Missing, add header
-- `content-security-policy`: Missing, add header
+- `content-security-policy`: Missing, add `frame-ancestors 'none'`
 - `content-type`: Missing, add header
 - `cross-origin-opener-policy`: Missing, add `same-origin`
 - `cross-origin-resource-policy`: Missing, add `same-origin`

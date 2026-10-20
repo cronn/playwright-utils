@@ -41,33 +41,39 @@ const MIN_HSTS_MAX_AGE = 31_536_000;
 
 const PERMISSIONS_POLICY = "geolocation=(), microphone=(), camera=()";
 
-const RECOMMENDED_COMMON_HEADERS: Array<RecommendedHeader> = [
-  { name: "cache-control" },
-  { name: "content-security-policy" },
-  { name: "content-type" },
-  { name: "cross-origin-opener-policy", recommended: "same-origin" },
-  {
-    name: "cross-origin-resource-policy",
-    recommended: "same-origin",
-  },
-  {
-    name: "strict-transport-security",
-    recommended: `max-age=${MIN_HSTS_MAX_AGE}; includeSubDomains`,
-    isAccepted: isStrictHsts,
-  },
-  {
-    name: "x-content-type-options",
-    recommended: "nosniff",
-  },
-  {
-    name: "x-robots-tag",
-  },
-];
+const API_CSP = "frame-ancestors 'none'";
+
+function recommendedCommonHeaders(
+  csp: RecommendedHeader,
+): Array<RecommendedHeader> {
+  return [
+    { name: "cache-control" },
+    csp,
+    { name: "content-type" },
+    { name: "cross-origin-opener-policy", recommended: "same-origin" },
+    {
+      name: "cross-origin-resource-policy",
+      recommended: "same-origin",
+    },
+    {
+      name: "strict-transport-security",
+      recommended: `max-age=${MIN_HSTS_MAX_AGE}; includeSubDomains`,
+      isAccepted: isStrictHsts,
+    },
+    {
+      name: "x-content-type-options",
+      recommended: "nosniff",
+    },
+    {
+      name: "x-robots-tag",
+    },
+  ];
+}
 
 const DISCOURAGED_COMMON_HEADERS = ["access-control-allow-origin"];
 
 const RECOMMENDED_DOCUMENT_HEADERS: Array<RecommendedHeader> = [
-  ...RECOMMENDED_COMMON_HEADERS,
+  ...recommendedCommonHeaders({ name: "content-security-policy" }),
   {
     name: "permissions-policy",
     recommended: PERMISSIONS_POLICY,
@@ -83,6 +89,13 @@ const RECOMMENDED_DOCUMENT_HEADERS: Array<RecommendedHeader> = [
   },
 ];
 
+const RECOMMENDED_API_HEADERS: Array<RecommendedHeader> =
+  recommendedCommonHeaders({
+    name: "content-security-policy",
+    recommended: API_CSP,
+    isAccepted: hasApiCspDirectives,
+  });
+
 const DISCOURAGED_DOCUMENT_HEADERS = [
   ...DISCOURAGED_COMMON_HEADERS,
   "x-xss-protection",
@@ -93,7 +106,7 @@ const RECOMMENDED_HEADERS: Record<
   Array<RecommendedHeader>
 > = {
   document: RECOMMENDED_DOCUMENT_HEADERS,
-  api: RECOMMENDED_COMMON_HEADERS,
+  api: RECOMMENDED_API_HEADERS,
 };
 
 const DISCOURAGED_HEADERS: Record<ResponseHeaderType, Array<string>> = {
@@ -249,6 +262,18 @@ function isStrictHsts(value: string): boolean {
     Number(maxAge) >= MIN_HSTS_MAX_AGE &&
     directives.includes("includesubdomains")
   );
+}
+
+/**
+ * Accepts a policy if it contains the recommended directives, so stricter
+ * policies with further directives like `default-src 'none'` are accepted as
+ * well.
+ */
+function hasApiCspDirectives(value: string): boolean {
+  const actualDirectives = normalizeValue(value).split("; ");
+  return normalizeValue(API_CSP)
+    .split("; ")
+    .every((directive) => actualDirectives.includes(directive));
 }
 
 /**

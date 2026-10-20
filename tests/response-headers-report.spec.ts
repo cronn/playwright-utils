@@ -105,6 +105,7 @@ test.describe("api", () => {
     await testResponseHeadersReport(
       {
         ...COMPLIANT_API_HEADERS,
+        "content-security-policy": "default-src 'none'",
         "cross-origin-opener-policy": "unsafe-none",
         "cross-origin-resource-policy": "cross-origin",
         "x-content-type-options": "none",

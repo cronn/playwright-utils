@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.11.0
+
+### Minor Changes
+
+- ae1d9d4: Recommend `Content-Security-Policy: frame-ancestors 'none'` for API responses in `responseHeadersReport`
+
 ## 0.10.1
 
 ### Patch Changes

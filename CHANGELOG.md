@@ -1,5 +1,11 @@
 # @cronn/playwright-utils
 
+## 0.11.1
+
+### Patch Changes
+
+- c3fe635: Fix `createFetchAdapter` throwing for responses with status `204`, `205` or `304`
+
 ## 0.11.0
 
 ### Minor Changes

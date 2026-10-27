@@ -9,21 +9,33 @@ import { maskedValue, maskedValueWithIndex } from "../src";
 import { createFetchAdapter, type FetchAPI } from "../src/api/fetch-adapter";
 import { expect } from "../src/test/fixtures";
 
+const STATUS_PATH_PATTERN = new URLPattern({
+  pathname: "/status/:status(\\d+)",
+});
+
 function createTestServer(): Server {
-  return http.createServer(
-    (request, response) =>
-      void readRequestBody(request).then((body) => {
-        response.writeHead(200, { "Content-Type": "application/json" });
-        response.end(
-          JSON.stringify({
-            method: request.method,
-            url: request.url,
-            headers: request.headers,
-            body,
-          }),
-        );
-      }),
-  );
+  return http.createServer((request, response) => {
+    const url = new URL(`${serverURL}${request.url}`);
+
+    if (STATUS_PATH_PATTERN.test(url)) {
+      const { status } = STATUS_PATH_PATTERN.exec(url)!.pathname.groups;
+      response.writeHead(Number(status));
+      response.end();
+      return;
+    }
+
+    void readRequestBody(request).then((body) => {
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({
+          method: request.method,
+          url: request.url,
+          headers: request.headers,
+          body,
+        }),
+      );
+    });
+  });
 }
 
 async function readRequestBody(request: IncomingMessage): Promise<unknown> {
@@ -161,3 +173,14 @@ test(
     });
   }),
 );
+
+for (const status of [204, 205, 304]) {
+  test(`returns null body for status ${status}`, async ({ request }) => {
+    const playwrightFetch = createFetchAdapter(request);
+    const response = await playwrightFetch(`${serverURL}/status/${status}`);
+
+    expect(response.status).toBe(status);
+    expect(response.body).toBeNull();
+    await expect(response.text()).resolves.toBe("");
+  });
+}

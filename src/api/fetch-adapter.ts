@@ -1,4 +1,4 @@
-import type { APIRequestContext } from "@playwright/test";
+import type { APIRequestContext, APIResponse } from "@playwright/test";
 
 export type FetchAPI = typeof fetch;
 
@@ -25,12 +25,23 @@ export function createFetchAdapter(
       await mapToOptions(input instanceof Request ? input : null, init),
     );
 
-    const responseBody = await response.body();
-    return new Response(Buffer.from(responseBody), {
+    return new Response(await mapToResponseBody(response), {
       status: response.status(),
       headers: response.headers(),
     });
   };
+}
+
+const NULL_BODY_STATUSES = new Set([204, 205, 304]);
+
+async function mapToResponseBody(
+  response: APIResponse,
+): Promise<BodyInit | null> {
+  if (NULL_BODY_STATUSES.has(response.status())) {
+    return null;
+  }
+
+  return Buffer.from(await response.body());
 }
 
 function mapToUrl(input: RequestInfo | URL): string {

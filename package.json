@@ -44,7 +44,6 @@
     "playwright:install": "playwright install chromium",
     "pnpm:clean": "pnpm pm clean && pnpm store prune",
     "prepublishOnly": "pnpm turbo run ci",
-    "release": "pnpm turbo run build && pnpm changeset publish",
     "test:integration": "playwright test",
     "test:unit": "vitest run",
     "test:unit:coverage": "vitest run --coverage",
